@@ -481,6 +481,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@contact/models@npm:^0.4.11":
+  version: 0.4.11
+  resolution: "@contact/models@npm:0.4.11::__archiveUrl=https%3A%2F%2Fgit.usb.ru%2Fapi%2Fv4%2Fprojects%2F69%2Fpackages%2Fnpm%2F%40contact%2Fmodels%2F-%2F%40contact%2Fmodels-0.4.11.tgz"
+  peerDependencies:
+    "@sql-tools/sequelize": ^6.27.8
+    "@sql-tools/sequelize-typescript": ^2.1.5
+    reflect-metadata: ^0.1.13
+  checksum: 10/2367f78fe1068da31ee75b24fe52ddb6dc16451169332f14b14c09f735f9fad71889036bb874162a4b36cc8d9b288bac0a48251d3beebf09a2430317f8381ab1
+  languageName: node
+  linkType: hard
+
 "@cspotcode/source-map-support@npm:^0.8.0":
   version: 0.8.1
   resolution: "@cspotcode/source-map-support@npm:0.8.1"
@@ -7107,6 +7118,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "server@workspace:."
   dependencies:
+    "@contact/models": "npm:^0.4.11"
     "@eslint/eslintrc": "npm:^3.2.0"
     "@eslint/js": "npm:^9.18.0"
     "@nestjs/cli": "npm:^11.0.0"
