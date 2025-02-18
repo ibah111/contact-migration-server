@@ -3,8 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import ModulesModule from './modules/modules.module';
 import { ConfigModule } from '@nestjs/config';
-import contactDatabaseConfig from './config/contact.database.config';
 import { node } from './main';
+import { database } from './config/contact.database.config';
 
 const envFilePath = '.env.' + node;
 
@@ -12,10 +12,9 @@ const envFilePath = '.env.' + node;
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [contactDatabaseConfig],
-      envFilePath: '.env.' + node,
+      load: [database],
+      envFilePath,
     }),
-
     ModulesModule,
   ],
   controllers: [AppController],
