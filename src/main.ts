@@ -26,6 +26,7 @@ class bootstrapOptions {
 }
 
 async function bootstrap() {
+  console.log(node!.yellow);
   const options = new bootstrapOptions();
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -41,8 +42,10 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
   console.log(
     'Server running on',
-    `${await app.getUrl()}`.replace('http', node === 'dev' ? 'http' : 'https')
-      .yellow,
+    `${await app.getUrl()}/docs`.replace(
+      'http',
+      node === 'dev' ? 'http' : 'https',
+    ).yellow,
   );
 }
 bootstrap();
