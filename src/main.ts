@@ -8,6 +8,12 @@ import 'colors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getSwaggerOptions, getSwaggerOptionsCustom } from './utils/swagger';
 
+// For definition of application mode
+/**
+ * depends from prod or dev mode applicatiton chooses
+ * DB's connection and console.log ooutputs
+ * (on dev logs are "ON", and on prod they are turned off)
+ */
 export const node = process.env.NODE_ENV;
 // For dev or prod http/https connection;
 class bootstrapOptions {

@@ -5,17 +5,17 @@ import ModulesModule from './modules/modules.module';
 import { ConfigModule } from '@nestjs/config';
 import { node } from './main';
 import { database } from './config/contact.database.config';
-
-const envFilePath = '.env.' + node;
+import PagesModule from './pages/pages.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [database],
-      envFilePath,
+      envFilePath: '.env.dev',
     }),
     ModulesModule,
+    PagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -23,5 +23,6 @@ const envFilePath = '.env.' + node;
 export class AppModule implements OnModuleInit {
   onModuleInit() {
     console.log('Application launched in ' + `${node}`.yellow + ' mode');
+    node === 'dev' ? console.log(process.env) : '';
   }
 }

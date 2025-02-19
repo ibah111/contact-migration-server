@@ -1,4 +1,3 @@
-import { registerAs } from '@nestjs/config';
 const db_properties = {
   host: process.env.DB_HOST,
   username: process.env.DB_USERNAME,
