@@ -11,8 +11,8 @@ import PagesModule from './pages/pages.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [database],
       envFilePath: '.env.dev',
+      load: [database],
     }),
     ModulesModule,
     PagesModule,
@@ -23,6 +23,5 @@ import PagesModule from './pages/pages.module';
 export class AppModule implements OnModuleInit {
   onModuleInit() {
     console.log('Application launched in ' + `${node}`.yellow + ' mode');
-    node === 'dev' ? console.log(process.env) : '';
   }
 }
