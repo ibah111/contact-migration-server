@@ -1,0 +1,1458 @@
+# --- Начало Привязка поручителя и человека к LawAct ---
+[law_act_person_link]
+table = "Привязка поручителя и человека к LawAct"
+[law_act_person_link.columns]
+R_LAW_ACT_ID = "Ссылка на LawAct"
+LINK_TYPE = "Тип связи (1-Ответчик/2-Истец/3-Третье лицо)"
+PERSON_ROLE = "Роль связаного человека (словарь 235)"
+PERSON_ID = "Ссылка на человека (если PERSON_ROLE = 1 то person, если PERSON_ROLE = 2 то DebtGuarantor)"
+[law_act_person_link.relations]
+R_LAW_ACT_ID = "law_act.id"
+# --- Конец Привязка поручителя и человека к LawAct ---
+
+# --- Начало Связаные лица ---
+[CONTACT_PERSON]
+table = "Связаные лица"
+[CONTACT_PERSON.columns]
+ID = "Id записи"
+R_DEBT_ID = "Ссылка на долг к которому привязано лицо"
+R_CONTACT_PERSON_ID = "Ссылка на человека который привязан к долгу"
+LINK_TYPE = "Тип привязки (Словарь 308)"
+[CONTACT_PERSON.relations]
+R_DEBT_ID = "debt.id"
+R_CONTACT_PERSON_ID = "person.id"
+# --- Конец Связаные лица ---
+
+# --- Начало Банк ---
+[bank]
+table = "Банк"
+[bank.columns]
+name = "Сокращенное наименование банка"
+full_name = "Полное наименование банка"
+bank_name_sms = "Название для SMS"
+pay_info = "Реквизиты"
+r_responsible_id = "Менеджер (ссылка на users)"
+collect_direct = "Тип клиента: null, 1 - Стандартный; 2 - ЖКХ; 3 - Банк"
+bank_phone = "Телефон банка"
+bank_address = "Адрес банка"
+use_portf_selfname = "Использовать ли правило автоматического формирования названия портфелей из частей (при значении \"0\" разрешается ручной ввод названия портфелей)"
+dsc = "Комментарий"
+priority = "Приоритет для автодайлера"
+number_value_1 = "Техническое поле"
+number_value_2 = "Техническое поле"
+segment = "Сегмент (словарь №236)"
+dict_value_1 = "Техническое поле"
+[bank.relations]
+r_responsible_id = "users.id"
+# --- Конец Банк ---
+
+
+# --- Начало Информация о персоне ---
+[person]
+table = "Информация о персоне"
+[person.columns]
+f = "Фамилия"
+i = "Имя"
+o = "Отчество"
+birth_date = "Дата рождения"
+importance = "Важность персоны"
+decency = "Порядочность"
+r_passport_id = "Ссылка на пасспорт"
+company_name = "Название компании"
+position = "Должность"
+dsc = "Комментарий"
+depart = "Подразделение (soft, hard, exec, legal)"
+family_status = "Семейное положение (словарь №12)"
+sex = "Пол"
+education = "Образование (словарь №38)"
+email = "Email"
+"id$" = "Техническое поле"
+typ = "Тип (1 - физ. лицо, 2 - юр. лицо)"
+inn = "ИНН"
+kpp = "КПП"
+okved = "ОКВЭД"
+okpo = "ОКПО"
+r_account = "Рсчетный счет"
+b_name = "Банк"
+k_account = "Кор. счет"
+bik = "БИК"
+director_fio = "ФИО ген. директора"
+ogrn = "ОГРН"
+load_dt = "Дата загрузки"
+website = "Страница в интернете"
+analyst_dsc = "Комментарий аналитика"
+income = "Доход"
+flag_workplace_validated = "Флаг \"Место работы проверено\""
+birth_place = "Место рождения"
+"ext_id$" = "Техническое поле"
+archive_dt = "Не используется"
+[person.relations]
+r_passport_id = "passport.id"
+# --- Конец Информация о персоне ---
+
+
+# --- Начало Контактные лица ---
+[person_management]
+table = "Контактные лица"
+[person_management.columns]
+parent_id = "Ссылка на персону"
+fio = "ФИО контактного лица"
+position = "Должность контактного лица"
+dsc = "Комментарий"
+phone = "Телефон"
+email = "Email"
+[person_management.relations]
+parent_id = "person.id"
+# --- Конец Контактные лица ---
+
+
+# --- Начало Информация о паспорте ---
+[passport]
+table = "Информация о паспорте"
+[passport.columns]
+series = "Серия"
+number = "Номер"
+dt = "Дата выдачи"
+place = "Кем выдано"
+"id$" = "Техническое поле"
+load_dt = "Дата загрузки"
+end_dt = "Не используется"
+depart_code = "Код подразделения"
+"ext_id$" = "Техническое поле"
+[passport.relations]
+# --- Конец Информация о паспорте ---
+
+
+# --- Начало Реестр ---
+[portfolio]
+table = "Реестр"
+[portfolio.columns]
+parent_id = "Ссылка на банк"
+name = "Название портфеля"
+sign_date = "Дата подписания"
+end_date = "Дата окончания"
+success_coef = "Коэффициент успешности"
+group_index = "Код группы"
+r_formula_id = "Ссылка на формулу (для комиссии)"
+dsc = "Комментарий"
+contract_info = "Информация о договоре с банком"
+r_package_id = "Ссылка на package"
+status = "Статус (словарь №57)"
+code = "Номер портфеля"
+typ = "Тип портфеля (словарь №58)"
+debt_typ = "Тип долгов портфеля (словарь №59)"
+code2 = "Номер раздела портфеля"
+load_dt = "Дата загрузки"
+r_calc_rule_id = "Ссылка на portfolio_calc_rule"
+real_load_dt = "Дата начала работ"
+r_com_rule_id = "Ссылка правило расчета комиссии"
+prior = "Приоритет"
+provided_legal = "Предусмотрен legal"
+sector = "Вид деятельности (словарь №104)"
+grade = "Классификация (Подразделение) (словарь №105)"
+contract_typ = "Тип договора (Цессия/Агентский) (словарь №106)"
+aggressive_plan = "Агресивный план"
+objective_plan = "Целевой план"
+purchase_price = "Стоимость покупки"
+forecast = "Прогноз взыскания"
+payments_until_dt = "Окончание даты учета платежа по портфелю"
+last_pay_date = "Дата последнего платежа"
+direction = "Направление портфеля (словарь №140)"
+auto_fix_period = "Период, после которого оператор автоматически меняется у долгов в портфеле на auto_user_id"
+auto_user_id = "Оператор по умолчанию для портфеля"
+sale_price = "Стоимость продажи"
+[portfolio.relations]
+parent_id = "bank.id"
+# --- Конец Реестр ---
+
+
+# --- Начало Адрес ---
+[address]
+table = "Адрес"
+[address.columns]
+parent_id = "Ссылка на person"
+country = "Страна"
+city = "Город"
+index_code = "Индекс"
+street = "Улица"
+house = "Дом"
+building = "Корпус"
+flat = "Квартира"
+typ = "Тип (словарь №5)"
+dsc = "Комментарий"
+block_flag = "Признак \"блокировать\""
+oblast = "Область"
+district = "Район"
+r_street_id = "Улица по справочнику"
+r_kladr_id = "Ссылка на KLADR"
+visit_state = "1 - необходим выезд, 2 - подготовлен выезд"
+full_adr = "Полный текст адреса"
+"id$" = "Техническое поле"
+load_dt = "Дата загрузки адреса"
+status = "Статус (словарь №63)"
+last_dt = "Дата последнего выезда"
+is_returned = "Признак возвращенного письма"
+dataq_state = "Статус адреса в DataQ (словарь №72)"
+is_residence = "Флаг \"Проживает\""
+visit_time = "Дата, когда необходимо сделать выезд"
+r_debt_guarantor_id = "Ссылка на debt_guarantor"
+r_person_property_id = "Ссылка на person_property"
+text_flag = "Признак, что адрес загружен строкой в full_adr"
+okato = "ОКАТО"
+modify_dt = "Дата изменения"
+r_kladr_street_id = "Полный код KLADR (17 символов)"
+verification_dt = "Дата верификации адреса"
+"ext_id$" = "Техническое поле"
+[address.relations]
+parent_id = "person.id"
+r_debt_guarantor_id = "debt_guarantor.id"
+r_person_property_id = "person_property.id"
+# --- Конец Адрес ---
+
+
+# --- Начало Информация о телефоне ---
+[phone]
+table = "Информация о телефоне"
+[phone.columns]
+parent_id = "Ссылка на person"
+number = "Номер"
+number2 = "Номер в международном формате без \"лишних\" символов"
+typ = "Тип (словарь №4)"
+status = "Статус (словарь №37)"
+last_dt = "Дата последнего звонка"
+block_flag = "Признак \"блокировать\""
+dsc = "Комментарий"
+"id$" = "Техническое поле"
+load_dt = "Дата загрузки телефона"
+contact_face = "Контактное лицо"
+iron_lady_dt = "Дата перевода на автоинформатор"
+region = "Регион (словарь №39)"
+check_state = "0 - не активный, 1 - активный"
+r_debt_guarantor_id = "Ссылка на debt_guarantor"
+r_person_property_id = "Ссылка на person_property"
+stop_autosms = "Признак запрета втоматических SMS"
+stop_autoinf = "Признак запрета голосового информирования"
+modify_dt = "Дата изменения"
+quality = "Код качества (словарь №114)"
+phone_gmt = "Ссылка на часовой пояс (словарь №51)"
+is_mobile = "Признак мобильного телефона"
+is_gmt_check = "Не используется"
+phone_dataq_state = "Не используется"
+verification_block_cnt = "Количество блокировок телефона по причине регистрации контакта \"Кандидат на удаление\""
+verification_dt = "Дата верификации"
+"ext_id$" = "Техническое поле"
+dict_value_1 = "Техническое поле"
+[phone.relations]
+parent_id = "person.id"
+r_debt_guarantor_id = "debt_guarantor.id"
+r_person_property_id = "person_property.id"
+# --- Конец Информация о телефоне ---
+
+
+# --- Начало Ссылки на файл ---
+[doc_links]
+table = "Ссылки на файл"
+[doc_links.columns]
+obj_id = "Ссылка на table_spec (описатель таблиц)"
+r_id = "Ссылка на запись"
+filename = "Имя документа"
+filepath = "Путь к документу на диске"
+link_typ = "Тип (словарь №99)"
+r_user_id = "Ссылка на users (пользователь, прикрепивший документ)"
+dt = "Дата"
+[doc_links.relations]
+r_user_id = "users.id"
+# --- Конец Ссылки на файл ---
+
+
+# --- Начало Прикрепленные файлы ---
+[doc_attach]
+table = "Прикрепленные файлы"
+[doc_attach.columns]
+obj_id = "Ссылка на table_spec (описатель таблиц)"
+r_id = "Ссылка на запись"
+name = "Имя документа"
+filename = "Имя файла"
+filebody = "Файл"
+vers1 = "Версия"
+vers2 = "Версия"
+is_active = "Является ли активным"
+attach_typ = "Тип (словарь №100)"
+r_user_id = "Ссылка на users (пользователь, прикрепивший документ)"
+dt = "Дата"
+number = "Номер"
+[doc_attach.relations]
+r_user_id = "users.id"
+# --- Начало Прикрепленные файлы ---
+
+
+# --- Начало Поручители ---
+[debt_guarantor]
+table = "Поручители"
+[debt_guarantor.columns]
+parent_id = "Ссылка на debt"
+sum = "Залоговая стоимость"
+dsc = "Комментарий"
+fio = "ФИО"
+birth_date = "Дата рождения"
+passport = "Паспорт"
+address = "Адрес"
+typ = "Тип должника (словарь №54)"
+ext_id = "Техническое поле"
+sex = "Пол"
+family_status = "Семейное положение (словарь №12)"
+education = "Образование (словарь №38)"
+company_name = "Название компании"
+position = "Должность"
+inn = "ИНН"
+kpp = "Код причины постановки (КПП)"
+pay_info = "Платежные реквизиты (юр. лица)"
+director_fio = "ФИО ген. директора (юр. лица)"
+contract = "Номер договора"
+start_date = "Дата заключения"
+end_date = "Дата окончания"
+finish_date = "Дата завершения"
+currency = "Валюта"
+real_sum = "Рыночная стоимость"
+fair_sum = "Справедливая стоимость"
+quality_coeff = "Коэффициент категории качества"
+name = "Наименование объекта"
+birth_place = "Место рождения"
+liability = "Тип отвественности (словарь №122)"
+social_number = "Бизнес-идентификационный номер (БИН)"
+id_card = "Удостоверение личности"
+tin = "Регистрационный номер налогоплательщика (РНН)"
+kind = "Роль поручителя (словарь №155)"
+string_value_1 = "Техническое поле"
+string_value_2 = "Техническое поле"
+number_value_1 = "Техническое поле"
+ogrn = "ОГРН"
+okved = "ОКВЭД"
+okpo = "ОКПО"
+r_account = "Расчетный счет"
+k_account = "Кор. счет"
+b_name = "Банк"
+bik = "БИК"
+dict_value_1 = "Техническое поле"
+[debt_guarantor.relations]
+parent_id = "debt.id"
+# --- Конец Поручители ---
+
+
+# --- Начало Произвольные атрибуты ---
+[random_value]
+table = "Произвольные атрибуты"
+[random_value.columns]
+parent_id = "Ссылка на таблицу \"Должник\" (person)"
+typ = "Тип атрибута (словарь №53)"
+value = "Значение"
+r_user_id = "Ссылка на таблицу \"Пользователь\" (users)"
+dt = "Дата"
+dsc = "Комментарий"
+r_debt_id = "Ссылка на таблицу \"Долг\" (debt)"
+"id$" = "Техническое поле"
+"ext_id$" = "Технческое поле"
+[random_value.relations]
+parent_id = "person.id"
+r_user_id = "users.id"
+r_debt_id = "debt.id"
+# --- Конец Произвольные атрибуты ---
+
+
+# --- Начало Информация о долге (кредите) ---
+[debt]
+table = "Информация о долге (кредите)"
+[debt.columns]
+parent_id = "Ссылка на person"
+name = "Название продукта"
+credit_date = "Дата выдачи кредита"
+interest_rate = "Процентная ставка по кредиту"
+start_date = "Дата выхода на просрочку"
+deadline = "Крайний срок погашения"
+debt_sum = "Сумма необходимая к погашению"
+total_sum = "Полный размер кредита"
+status = "Статус (словарь №6)"
+dsc = "Комментарий"
+contract = "Номер договора с банком"
+account = "Лицевой счет должника"
+typ = "Тип продукта (словарь №11)"
+reason = "Причина возникновения задолженности (словарь №13)"
+start_sum = "Начальная сумма, необходимая к погашению (не изменяется)"
+int_color = "Номер цвета, для внутреннего использования коллекторами"
+flag_no_work = "Признак отсутсвия работы по должнику"
+r_lock_user_id = "Пользователь call-центра, локирующий должника"
+basic_sum = "Основной долг"
+exp_basic_sum = "Просроченный основной долг"
+percent_sum = "Проценты"
+exp_percent_sum = "Просроченные проценты"
+penalty_sum = "Штрафы"
+peni_sum = "Пени"
+commission_sum = "Комиссия"
+due_sum = "Гос. пошлина"
+rep_text = "Результат работы с должником"
+offer_text = "Предложение по дальнейшей работе с должником"
+r_portfolio_id = "Ссылка на портфель"
+state = "Состояние (словарь №29)"
+prev_state = "Предыдущее состояние (словарь №29)"
+filial = "Регион (словарь №39)"
+dpd = "Количество дней просрочки"
+gmt = "Часовой пояс (словарь №51)"
+"id$" = "Техническое поле"
+debt_dt = "Дата расчета остатка"
+lock_dt = "Дата локирования"
+debt_exp_dt = "Дата актуальности остатка"
+load_dt = "Дата загрузки"
+lock_cnt = "Кол-во обработок должника в call-центре"
+agency_rate = "Комиссия агента"
+total_rest = "Остаток основного долга"
+filial_new = "Филиал (словарь №61)"
+penalty = "Штрафы"
+ext_id = "ID в системе клиента"
+last_pay = "Последний платеж"
+exp_commission_sum = "Просроченная комиссия"
+flag_preventive = "Флаг \"Профилактика\""
+debt_sum_extra = "Переплата"
+last_pay_sum = "Сумма последнего платежа"
+law_act_flag = "Указывает, что есть судебное дело"
+law_exec_flag = "Указывает, что есть ИП"
+use_strategy = "Не используется"
+strategy_id = "Не используется"
+strategy_day = "Не используется"
+strategy_block = "Не используется"
+strategy_dt = "Не используется"
+r_calc_id = "Ссылка на последний платеж, изменивший составляющие долга. Работает, когда у портфеля есть правило расчета"
+mark1 = "Словарь №101 (атрибут, доступный по коммерческой константе, словарь может наполняться любыми данными по безнес-задачам клиента)"
+mark2 = "Словарь №102 (атрибут, доступный по коммерческой константе, словарь может наполняться любыми данными по безнес-задачам клиента)"
+stock = "Акция"
+next_pay = "Дата следующего платежа"
+pos_name = "Точка продаж"
+sum_on_bank_account = "Сумма остатка на счете заемщика"
+annuity_pay = "Сумма аннуитетного платежа"
+fine_sum = "Единовременный штраф"
+next_pay_sum = "Сумма следующего платежа"
+r_portfolio_out_id = "Ссылка на исходящий портфель"
+archive_dt = "Дата формирования заявки для веревода в архив"
+reason_status = "Причина смены статуса"
+mark3 = "Словарь №244 (атрибут, доступный по коммерческой константе, словарь может наполняться любыми данными по безнес-задачам клиента)"
+mark4 = "Словарь №245 (атрибут, доступный по коммерческой константе, словарь может наполняться любыми данными по безнес-задачам клиента)"
+r_bank_requisite_id = "Ссылка на банковские реквизиты (bank_requisite.id)"
+extention_dt = "Дата пролонгации"
+[debt.relations]
+parent_id = "person.id"
+r_lock_user_id = "users.id"
+r_portfolio_id = "portfolio.id"
+r_calc_id = "debt_calc.id"
+r_portfolio_out_id = "portfolio.id"
+r_bank_requisite_id = "bank_requisite.id"
+# --- Конец Информация о долге (кредите) ---
+
+
+# --- Начало История статуса долга ---
+[debt_status_log]
+table = "История статуса долга"
+[debt_status_log.columns]
+parent_id = "Ссылка на debt"
+status = "Статус (словарь №6)"
+state = "Состояние (словарь №29)"
+dt = "Дата записи"
+mark1 = "Словарь №101 (атрибут, доступный по коммерческой константе, словарь может наполняться любыми данными по безнес-задачам клиента)"
+mark2 = "Словарь №102 (атрибут, доступный по коммерческой константе, словарь может наполняться любыми данными по безнес-задачам клиента)"
+reason_status = "Причина смены статуса"
+r_user_id = "Ссылка на оператора"
+mark3 = "Словарь №244 (атрибут, доступный по коммерческой константе, словарь может наполняться любыми данными по безнес-задачам клиента)"
+mark4 = "Словарь №245 (атрибут, доступный по коммерческой константе, словарь может наполняться любыми данными по безнес-задачам клиента)"
+[debt_status_log.relations]
+parent_id = "debt.id"
+r_user_id = "users.id"
+# --- Конец История статуса долга ---
+
+
+# --- Начало Финансовая история долга (история баланса) ---
+[debt_balance_log]
+table = "Финансовая история долга (история баланса)"
+[debt_balance_log.columns]
+parent_id = "Ссылка на таблицу \"Долг\""
+debt_sum = "Сумма необходимая к погашению"
+debt_dt = "Дата расчета остатка"
+debt_exp_dt = "Дата актуальности остатка"
+basic_sum = "Основной долг"
+exp_basic_sum = "Просроченный основной долг"
+percent_sum = "Проценты"
+exp_percent_sum = "Просроченные проценты"
+penalty_sum = "Штрафы"
+peni_sum = "Пени"
+commission_sum = "Комиссия"
+due_sum = "Гос. пошлина"
+dt = "Дата записи"
+start_date = "Дата выхода на просрочку"
+total_rest = "Остаток основного долга"
+exp_commission_sum = "Просроченная комиссия"
+flag_preventive = "Признак \"Профилактика\""
+debt_sum_extra = "Сумма переплаты"
+r_calc_id = "Ссылка на платеж. Работает, когда у портфеля есть правило расчета"
+start_sum = "Начальный долг"
+sum_on_bank_account = "Сумма остатка на счете заемщика"
+[debt_balance_log.relations]
+parent_id = "debt.id"
+r_calc_id = "debt_calc.id"
+# --- Конец Финансовая история долга (история баланса) ---
+
+
+# --- Начало История работы с долгом ---
+[work_task_log]
+table = "История работы с долгом"
+[work_task_log.columns]
+r_debt_id = "Ссылка на debt"
+r_user_id = "Ссылка на оператора"
+prior = "Приоритет (чем меньше, тем выше)"
+r_admin_id = "Ссылка на оператора-постановщика задания"
+r_contact_id = "Ссылка на действие"
+fd = "Дата начала жизни записи"
+td = "Дата конца жизни записи"
+reason_soft = "Причина перевода в hard (словарь №70)"
+reason_hard = "Причина перевода в legal (словарь №71)"
+office_time = "Дата посещения офиса"
+r_user_id_h = "Ссылка на оператора стадии hadr"
+r_user_id_l = "Ссылка на оператора стадии legal"
+[work_task_log.relations]
+r_debt_id = "debt.id"
+r_user_id = "users.id"
+r_admin_id = "users.id"
+r_contact_id = "contact_log.id"
+r_user_id_h = "users.id"
+r_user_id_l = "users.id"
+# --- Конец История работы с долгом ---
+
+
+# --- Начало Обещания оплаты по долгу ---
+[debt_promise]
+table = "Обещания оплаты по долгу"
+[debt_promise.columns]
+parent_id = "Ссылка на debt"
+dt = "Дата регистрации в БД"
+prom_date = "Обещанная дата"
+prom_sum = "Обещанная сумма"
+cover_sum = "Покрытая сумма"
+dsc = "Комментарий"
+is_unchecked = "Признак необходимости верификации начальником"
+"id$" = "Техническое поле"
+typ = "Тип обещания (null - досудебное обещание, not null - судебное по словарю №43)"
+"$id$" = "Техническое поле"
+r_user_id = "Ссылка на пользователя, зарегистрировавшего обещание"
+dict_value_1 = "Техническое поле"
+r_person_id = "Ссылка на person"
+[debt_promise.relations]
+parent_id = "debt.id"
+r_user_id = "users.id"
+r_person_id = "person.id"
+# --- Конец Обещания оплаты по долгу ---
+
+
+# --- Начало Платежи по долгу ---
+[debt_calc]
+table = "Платежи по долгу"
+[debt_calc.columns]
+parent_id = "Ссылка на debt"
+sum = "Размер платежа"
+dt = "Дата регистрации в БД"
+is_confirmed = "Признак подтверждения платежа банком"
+is_cancel = "Признак отмены платежа"
+r_promise_id = "Номер обещания, покрытого платежом"
+dsc = "Комментарий"
+calc_date = "Дата в банке"
+r_currency_id = "Ссылка на таблицу \"Валюта\""
+int_sum = "Размер платежа в рублях (заполняется, если валюта не рубль)"
+commission = "Размер комиссии"
+"id$" = "Техническое поле"
+r_user_id = "Индивидуальная привязка коллектора, который получит комиссию"
+req_change = "Признак запроса на изменение индивидуальной привязки платежа"
+report_date = "Дата, на которую учитывать платеж в отчетах (необязательная)"
+typ = "Тип платежа (null - досудебное обещание, not null - судебное по словарю №42)"
+confirm_dt = "Дата подтверждения платежа"
+cancel_dt = "Дата отмены платежа"
+invoice_flag = "Флаг \"Квитанция\""
+r_req_user_id = "Коллектор, на которого имеется заявка на смену индивидуальной привязки платежа"
+r_bank_requisites_id = "Ссылка на расчетный счет в таблице bank_requisites"
+ext_id = "Техническое поле"
+"$id$" = "Техническое поле"
+payer_name = "ФИО плательщика"
+contact_number = "№ договора к оплате"
+ticket_number = "№ квитанции"
+purpose = "Назначение платежа (словарь №130)"
+number_value_1 = "Техническое поле"
+number_value_2 = "Техническое поле"
+number_value_3 = "Техническое поле"
+number_value_4 = "Техническое поле"
+[debt_calc.relations]
+parent_id = "debt.id"
+r_user_id = "users.id"
+r_req_user_id = "users.id"
+r_bank_requisites_id = "bank_requisites.id"
+# --- Конец Платежи по долгу ---
+
+
+# --- Начало Протокол контактов ---
+[contact_log]
+table = "Протокол контактов"
+[contact_log.columns]
+parent_id = "Ссылка на person"
+r_debt_id = "ссылка на debt"
+r_phone_id = "Ссылка на phone должника"
+r_user_id = "Ссылка на оператора"
+dt = "Дата контакта"
+result = "Код результата контакта (ссылка на contact_result_set.code)"
+r_calc_id = "Ссылка на debt_calc"
+r_prom_id = "Ссылка на debt_promise"
+dsc = "Комментарий"
+typ = "Тип контакта (словарь №3)"
+r_adres_id = "Ссылка на address"
+"id$" = "Техническое поле"
+r_reg_user_id = "Ссылка на регистратора"
+reg_dt = "Фактическая дата регистрации контакта"
+r_debt_guarantor_id = "Ссылка на debt_guarantor"
+r_person_property_id = "Ссылка на person_property"
+uid = "ID звонка из БД провайдера телефонии (при инетграции)"
+value_n1 = "Техническое поле"
+value_n2 = "Техническое поле"
+call_reason = "Причина звонка (словарь №118)"
+ext_id = "Техническое поле"
+r_debt_discount_id = "Предложенная акция (ссылка на debt_discount)"
+latitude = "Координаты: широта (Android)"
+longitude = "Координаты: долгота (Android)"
+accuracy = "Координаты: точность (Android)"
+duration = "Длительность звонка в секундах"
+origin = "Клиент, из которого был зарегистрирован контакт"
+[contact_log.relations]
+parent_id = "person.id"
+r_debt_id = "debt.id"
+r_phone_id = "phone.id"
+r_user_id = "users.id"
+r_calc_id = "debt_calc.id"
+r_prom_id = "debt_promise.id"
+r_adres_id = "address.id"
+r_reg_user_id = "users.id"
+r_debt_guarantor_id = "debt_guarantor.id"
+r_person_property_id = "person_property.id"
+r_debt_discount_id = "debt_discount.id"
+# --- Конец Протокол контактов ---
+
+
+# --- Начало Письма должнику ---
+[debt_letter]
+table = "Письма должнику"
+[debt_letter.columns]
+parent_id = "Ссылка на таблицу \"Долг\""
+r_address_id = "Ссылка на таблицу \"Адрес\""
+typ = "Тип письма (словарь №36)"
+registered_letter = "Признак \"заказное письмо\""
+status = "Состояние письма (словарь №35)"
+out_num = "Уникальный внешний номер письма"
+dt = "Дата, на которую актуален статус"
+r_user_id = "Ссылка на таблицу \"Пользователь\""
+r_debt_guarantor_id = "Ссылка на таблицу \"Поручитель\""
+r_person_property_id = "Ссылка на таблицу \"Имущество должника\""
+"id$" = "Техническое поле"
+r_plan_id = "Ссылка на debt_letter_plan"
+r_requisite_id = "Ссылка на bank_debt_requisite_link"
+start_date = "Дата отправки письма"
+letterbody = "Письмо должника"
+[debt_letter.relations]
+parent_id = "debt.id"
+r_address_id = "address.id"
+r_user_id = "users.id"
+r_debt_guarantor_id = "debt_guarantor.id"
+r_person_property_id = "person_property.id"
+r_plan_id = "debt_letter_plan.id"
+r_requisite_id = "bank_debt_requisite_link.id"
+# --- Конец Письма должнику ---
+
+
+# --- Начало SMS должнику ---
+[debt_sms]
+table = "SMS должнику"
+[debt_sms.columns]
+parent_id = "Ссылка на долг"
+r_phone_id = "Ссылка на телефон"
+status = "Состояние SMS (словарь №50)"
+dt = "Дата, на котоую актуален статус"
+text = "Текст SMS-сообщения"
+r_user_id = "Ссылка на users"
+start_date = "Дата, когда необходимо начать отправку"
+"sms_id$" = "ID во внешней системе провайдера"
+"sms_parts$" = "Количество фактически отправленных sms"
+send_date = "Дата отправки"
+check_state_cnt = "Количество попыток обновления статуса"
+r_debt_guarantor_id = "Ссылка на debt_guarantor"
+r_person_property_id = "Ссылка на person_property"
+"id$" = "Техническое поле"
+r_debt_msg_id = "Ссылка на сценарий (debt_msg)"
+originator = "Отправитель"
+priority = "Приоритет sms"
+r_discount_id = "Ссылка на акцию"
+provider_typ = "Провайдер (для СМС-автомата). 0 или null - отправка через MobilMoney, 1 - отправка через альтернативного провайдера"
+channel = "Канад доставки в рамках провайдера (1 - стандартный, 2 - приоритетный)"
+[debt_sms.relations]
+parent_id = "debt.id"
+r_phone_id = "phone.id"
+r_user_id = "users.id"
+r_debt_guarantor_id = "debt_guarantor.id"
+r_person_property_id = "person_property.id"
+r_debt_msg_id = "debt_msg.id"
+# --- Конец SMS должнику ---
+
+
+# --- Начало Email должнику ---
+[debt_email]
+table = "Email должнику"
+[debt_email.columns]
+parent_id = "Ссылка на долг"
+r_person_id = "Ссылка на персону"
+status = "Состояние email (словарь №65)"
+dt = "Дата, на которую актуален статус"
+text = "Текст email"
+r_user_id = "Ссылка на users"
+start_date = "Дата, когда необходимо начать отправку"
+send_date = "Дата отправки"
+subject = "Тема письма"
+r_debt_msg_id = "Ссылка на сценарий"
+r_debt_guarantor_id = "Ссылка на поручителя"
+r_person_property_id = "Ссылка на залогодателя"
+email = "Адрес электронной почты"
+r_plan_id = "Ссылка на debt_email_plan"
+r_discount_id = "Ссылка на акцию"
+[debt_email.relations]
+parent_id = "debt.id"
+r_person_id = "person.id"
+r_user_id = "users.id"
+r_debt_guarantor_id = "debt_guarantor.id"
+r_person_property_id = "person_property.id"
+r_plan_id = "debt_email_plan.id"
+# --- Конец Email должнику ---
+
+
+# --- Начало Информация о суде и ФССП ---
+[law_court]
+table = "Информация о суде и ФССП"
+[law_court.columns]
+index_code = "код"
+name = "Название"
+address = "Адрес"
+phone = "Телефон"
+court_typ = "Тип суда (словарь №15) (заполняется только для суда)"
+district = "Район (заполняется только для ФССП)"
+dsc = "Комментарий"
+typ = "1 - суд, 2 - ФССП"
+recipient = "Получатель"
+inn = "ИНН"
+kpp = "КПП"
+bik = "БИК"
+cur_account = "Рассчетный счет"
+corr_account = "Корреспондентский счет"
+bank = "Банк"
+kbk = "КБК"
+okato = "ОКАТО"
+r_parent_id = "Ссылка на родитльский суд"
+[law_court.relations]
+r_parent_id = "law_court.id"
+# --- Конец Информация о суде и ФССП ---
+
+
+# --- Начало Информация о судьях и судебный приставах ---
+[law_judge]
+table = "Информация о судьях и судебный приставах"
+[law_judge.columns]
+parent_id = "Ссылка на law_court"
+fio = "ФИО"
+phone = "Телефон"
+email = "Email"
+position = "Категория/должность"
+office = "Кабинет"
+typ = "1 - судья, 2 - судебный пристав, 3 - арбитражный судья"
+dsc = "Комментарий"
+[law_judge.relations]
+parent_id = "law_court.id"
+# --- Конец Информация о судьях и судебный приставах ---
+
+
+# --- Начало Информация о заседаниях ---
+[law_session]
+table = "Информация о заседаниях"
+[law_session.columns]
+parent_id = "Ссылка на дело"
+r_debt_id = "Ссылка на долг"
+dt = "Дата"
+r_judge_id = "Ссылка на судью (law_judge)"
+status = "Статус (словарь №73)"
+decision = "Решение"
+result = "Результат (словарь №74)"
+dsc = "Комментарий"
+typ = "Тип судебного заседания (словарь №254)"
+[law_session.relations]
+r_debt_id = "debt.id"
+r_judge_id = "law_judge.id"
+# --- Конец Информация о заседаниях ---
+
+
+# --- Начало Судебный иск/приказ ---
+[law_act]
+table = "Судебный иск/приказ"
+[law_act.columns]
+r_person_id = "Ссылка на person"
+r_debt_id = "Ссылка на debt"
+r_portfolio_id = "Ссылка на portfolio"
+typ = "Тип суд. работы (0 - неопределенное суд. дело, 1 - приказ, 2 - иск, 3 - провопреемство, 4 - банкрот)"
+fd = "Дата поступления дела"
+court_name = "Название суда (устар.)"
+court_adres = "Территориальность и адрес суда (устар.)"
+court_kind = "Родовая подсудность (словарь №14)"
+court_typ = "Тип суда (словарь №15)"
+due_sum = "Размер пошлины"
+total_sum = "Размер требования по заявлению"
+start_date = "Дата подачи заявления в суд"
+delivery_typ = "Способ доставки заявления в суд (словарь №16)"
+court_order_period = "Период ожидания вынесения судебного приказа"
+court_order_date = "Дата отправки судебного приказа судом"
+court_order_delivery = "Способ доставки судебного приказа должнику (словарь №17)"
+receipt_date = "Дата получения судебного приказа должником"
+status = "Статус приказа (словарь №18)"
+full_strength = "Укомплектованность (словарь №19)"
+court_pre_fio = "ФИО судьи (предв. заседание) (не используется)"
+court_pre_date = "Дата предв. заседания (не используется)"
+court_pre_def = "Определение, вынесенное на предв. заседании (не используется)"
+court_fio = "ФИО судьи (не используется)"
+court_date = "Дата заседания (не используется)"
+court_def = "Определение, вынесенное на заседании (не используется)"
+act_status = "Статус иска (словарь №25)"
+deadline = "Крайний срок подачи"
+dsc = "Комментарий"
+instruct = "Указания руководителя"
+r_user_id = "Ссылка на users"
+r_court_id = "Ссылка на law_court"
+due_conf_sum = "Утвержденный размер пошлины"
+contract = "Номер договора"
+currency = "Валюта"
+court_exec_date = "Дата вступления в силу (иска)"
+int_color = "Цвет"
+name = "Название продукта"
+typ_name = "Тип продукта (словарь №11)"
+exec_number = "Номер документа (приказа/иска) (номер СП)"
+exec_date = "Дата документа (приказа/иска)"
+load_dt = "Дата загрузки/формирования дела"
+receipt_act_dt = "Дата получения исп. листа на обеспечение"
+receipt_dt = "Дата получения исп. листа"
+court_sum = "Сумма по решению суда"
+terminate_contract_dt = "Дата расторжения договора"
+settlement_sum = "Сумма мирового соглашения"
+settlement_date = "Дата мирового соглашения"
+is_obtain_contract = "(устарело) Флаг получен ли договор (1 - да, 0 - нет)"
+is_entire_amount = "(устарело) Флаг вынесена вся сумма на просрочку (1 - да, 0 - нет)"
+failure_date = "Дата отказа"
+correct_period_date = "Дата срока исполнения недостатков"
+due_pay_date = "Дата оплаты госпошлины"
+due_pay_num = "Номер платежного поручения"
+user_result = "Результат дела (словарь №135)"
+r_judge_id = "Судья (ссылка на law_judge)"
+basic_sum = "Основной долг"
+percent_sum = "Проценты"
+commission_sum = "Комиссия"
+peni_sum = "Пени"
+peni_basic_sum = "Пени основного долга"
+peni_percent = "Проценты пени"
+peni_commission = "Проценты комиссии"
+act_direct = "Тип иска (0, null - исходящий, 1 - входящий). По умолчанию иск исходящий"
+dt_to_archive = "Дата перевода в архивный статус"
+inner_number = "Входящий номер (используется для входящего иска)"
+penalty_sum = "Штрафы"
+dict_value_1 = "Техническое поле"
+r_address_id = "Адрес, по которому на должника подали в суд (ссылка на address)"
+pre_act_status = "Статус неопределенного судебного дела (словарь №252)"
+"ext_id$" = "Техническое поле"
+[law_act.relations]
+r_person_id = "person.id"
+r_debt_id = "debt.id"
+r_portfolio_id = "portfolio.id"
+r_user_id = "users.id"
+r_court_id = "law_court.id"
+r_judge_id = "law_judge.id"
+r_address_id = "address.id"
+# --- Конец Судебный иск/приказ ---
+
+
+# --- Начало Протокол судебной работы ---
+[law_act_protokol]
+table = "Протокол судебной работы"
+[law_act_protokol.columns]
+parent_id = "Ссылка на law_act"
+r_user_id = "Ссылка на users"
+dt = "Дата овершения действия"
+typ = "Тип действия (словарь №26)"
+dsc = "Комментарий"
+r_doc_attach_id = "Ссылка на doc_attach"
+r_doc_link_id = "Ссылка doc_links"
+[law_act_protokol.relations]
+parent_id = "law_act.id"
+r_user_id = "users.id"
+r_doc_attach_id = "doc_attach.id"
+r_doc_link_id = "doc_links.id"
+# --- Конец Протокол судебной работы ---
+
+
+# --- Начало Планируемые задачи по судебной работе ---
+[law_act_task]
+table = "Планируемые задачи по судебной работе"
+[law_act_task.columns]
+parent_id = "Ссыдка на law_act"
+typ = "Тип задачи (словарь №82)"
+dsc = "Описание"
+start_date = "Дата постановке"
+finish_date = "Планируемая дата окончания"
+status = "Статус задачи (словарь №81)"
+prior = "Приоритет задачи (словарь №83)"
+exec_date = "Дата фактического выполнения задания"
+[law_act_task.relations]
+parent_id = "law_act.id"
+# --- Конец Планируемые задачи по судебной работе ---
+
+
+# --- Начало Жалобы ---
+[law_act_appel]
+table = "Жалобы"
+[law_act_appel.columns]
+parent_id = "Ссылка на law_act"
+start_date = "Дата подачи"
+end_date = "Дата удовлетворения/отклонения"
+vid = "Вид жалобы (словарь №30)"
+typ = "Тип жалобы (словарь №31)"
+status = "Статус жалобы (словарь №32)"
+text = "Описание"
+appel_dt = "Фактическая дата жалобы"
+appel_session_dt = "Дата заседания жалобы"
+appel_result = "Результат рассмотренной жалобы (словарь №120)"
+direct = "Направление жалобы"
+[law_act_appel.relations]
+parent_id = "law_act.id"
+# --- Конец Жалобы ---
+
+
+# --- Начало Заявления ---
+[law_act_solicitation]
+table = "Заявления"
+[law_act_solicitation.columns]
+parent_id = "Ссылка на law_act"
+start_date = "Дата подачи"
+end_date = "Дата удовлетворения/отклонения"
+typ = "Тип заявления (словарь №33)"
+status = "Статус заявления (словарь №34)"
+dsc = "Комментарий"
+[law_act_solicitation.relations]
+parent_id = "law_act.id"
+# --- Конец Заявления ---
+
+
+# --- Начало Исполнительное производство ---
+[law_exec]
+table = "Исполнительное производство"
+[law_exec.columns]
+r_person_id = "Ссылка на person"
+r_debt_id = "Ссылка на debt"
+r_portfolio_id = "Ссылка на portfolio"
+total_sum = "Общая сумма долга"
+r_user_id = "Ссылка на users"
+court_doc_num = "Номер исполнительного документа"
+court_name = "Название суда (устар.) (не используется)"
+court_date = "Дата вынесения"
+fssp_name = "Название ФССП (устар.) (не используется)"
+fssp_doc_num = "Номер исполнительного производства"
+fssp_date = "Дата подачи в ФССП/ОСП"
+start_date = "Дата возбуждения ИП"
+deposit_typ = "Наличие залогового имущества"
+officer_fio = "ФИО пристава (не используется)"
+officer_phone = "Телефон пристава (не используется)"
+officer_room = "Комната пристава (не используется)"
+officer_fio2 = "ФИО пристава (зам.) (не используется)"
+officer_phone2 = "Телефон пристава (зам.) (не используется)"
+officer_room2 = "Комната пристава (зам.) (не используется)"
+status = "Статус (устар.) (не используется)"
+finish_date = "Дата окончания производства"
+finish_reason = "Причина кончания производства (словарь №41)"
+dsc = "Комментарий"
+instruct = "Указания руководителя"
+r_court_id = "Ссылка на law_court (ФССП)"
+r_act_id = "Ссылка на law_act"
+state = "Статус (словарь №77)"
+contract = "Номер договора"
+currency = "Валюта"
+int_color = "Цвет"
+name = "Название продукта"
+typ_name = "Тип продукта (словарь №11)"
+uncollectibility_act = "Акт о завершении"
+due_sum = "Гос. пошлина"
+load_dt = "Дата загрузки/формирования ИП"
+receipt_act_dt = "Дата получения исп. листа"
+executive_typ = "Тип исполнительного документа (словарь №124)"
+entry_force_dt = "Дата вступления решения суда в законную силу"
+reject_reason = "Причина отказа (словарь №125)"
+reject_date = "Дата отказа"
+complete_date = "Дата получения постановления об окончании ИП"
+settlement_sum = "Сумма мирового соглашения"
+settlement_date = "Дата мирового соглашения"
+receipt_arrest_dt = "Дата получения ИП на арест"
+receipt_recover_dt = "Дата получения ИП на взыскание"
+fssp_plan_date = "Плановая дата подачи в ФССП"
+complete_plan_date = "Плановая дата окончания ИП"
+restriction_to_leave_dt = "Дата ограничения на выезда"
+dict_value_1 = "Техническое поле"
+r_address_id = "Адрес, по которому на должника подали исполн. документы (ссылка на address)"
+"ext_id$" = "Техническое поле"
+dt_to_archive = "Дата перевода дела в архив"
+[law_exec.relations]
+r_person_id = "person.id"
+r_debt_id = "debt.id"
+r_portfolio_id = "portfolio.id"
+r_user_id = "users.id"
+r_court_id = "law_court.id"
+r_act_id = "law_act.id"
+r_address_id = "address.id"
+# --- Конец Исполнительное производство ---
+
+
+# --- Начало Протокол ИП ---
+[law_exec_protokol]
+table = "Протокол ИП"
+[law_exec_protokol.columns]
+parent_id = "Ссылка на law_exec"
+r_user_id = "Ссылка на users"
+dt = "Дата совершения действия"
+typ = "Тип действия (словарь №76)"
+dsc = "Комментарий"
+r_doc_link_id = "Ссылка doc_links"
+r_doc_attach_id = "Ссылка на doc_attach"
+[law_exec_protokol.relations]
+parent_id = "law_exec.id"
+r_user_id = "users.id"
+r_doc_link_id = "doc_links.id"
+r_doc_attach_id = "doc_attach.id"
+# --- Конец Протокол ИП ---
+
+
+# --- Начало Платежи по ИП ---
+[law_exec_calc]
+table = "Платежи по ИП"
+[law_exec_calc.columns]
+parent_id = "Ссылка на law_exec"
+r_user_id = "Ссылка на users"
+typ = "Тип платежа (словарь №42)"
+int_sum = "Размер платежа в рублях (заполняется, если валюта не рубль)"
+dt = "Дата регистрации в БД"
+calc_date = "Дата в банке"
+is_confirmed = "Признак подтверждения платежа банком"
+is_cancel = "Признак отмены платежа"
+dsc = "Комментарий"
+[law_exec_calc.relations]
+parent_id = "law_exec.id"
+r_user_id = "users.id"
+# --- Конец Платежи по ИП ---
+
+
+# --- Начало Обещания по ИП ---
+[law_exec_promise]
+table = "Обещания по ИП"
+[law_exec_promise.columns]
+parent_id = "Ссылка на law_exec"
+typ = "Тип обращения (словарь №43)"
+dt = "Дата регистрации в БД"
+prom_date = "Обещанная дата"
+prom_sum = "Обещанная сумма"
+dsc = "Комментарий"
+[law_exec_promise.relations]
+parent_id = "law_exec.id"
+# --- Конец Обещания по ИП ---
+
+
+# --- Начало Запросы пристава ---
+[law_exec_request]
+table = "Запросы пристава"
+[law_exec_request.columns]
+parent_id = "Ссылка на law_exec"
+typ = "Тип запроса (словарь №44)"
+dt = "Дата регистрации"
+result = "Ответ на запрос (словарь №45)"
+subject = "Предмет (словарь №46)"
+name = "Название"
+sum = "Сумма"
+reg_num = "Регистрационный номер"
+reg_year = "Год выпуска/регистрации"
+text = "Краткая характеристика"
+request_dt = "Фактическая дата запроса"
+result_dt = "Дата ответа"
+[law_exec_request.relations]
+parent_id = "law_exec.id"
+# --- Конец Запросы пристава ---
+
+
+# --- Начало Принятые меры ---
+[law_exec_arrangements]
+table = "Принятые меры"
+[law_exec_arrangements.columns]
+parent_id = "Ссылка на law_exec"
+subject = "Предмет (словарь №46)"
+dt = "Дата регистрации"
+typ = "Тип действия (словарь №47)"
+name = "Название"
+sum = "Сумма"
+reg_sum = "Регистрационный номер"
+reg_year = "Год выпуска/регистрации"
+dsc = "Комментарий"
+arrangements_dt = "Фактическая дата меры"
+r_property_id = "Ссылка на person_property"
+[law_exec_arrangements.relations]
+parent_id = "law_exec.id"
+r_property_id = "person_property.id"
+# --- Конец Принятые меры ---
+
+
+# --- Начало Имущество должника ---
+[person_property]
+table = "Имущество должника"
+[person_property.columns]
+typ = "Тип (словарь №85)"
+r_person_id = "Ссылка на person"
+sum = "Залоговая стоимость"
+status = "Статус (словарь №86)"
+dsc = "Комментарий"
+ext_id = "Техническое поле"
+fio = "ФИО"
+birth_date = "Дата рождения"
+sex = "Пол"
+family_status = "Семейное положение (словарь №12)"
+education = "Образование (словарь №38)"
+company_name = "Название компании"
+position = "Должность"
+inn = "ИНН"
+kpp = "КПП"
+pay_info = "Платежные реквизиты (юр. лица)"
+director_fio = "ФИО ген. директора (юр. лица)"
+passport = "Паспорт"
+contract = "Номер договора"
+start_date = "Дата заключения"
+end_date = "Дата окончания"
+finish_date = "Дата завершения"
+name = "Наименование объекта"
+currency = "Валюта"
+real_sum = "Рыночная стоимость"
+fair_sum = "Справедливая стоимость"
+quality_coeff = "Коэффициент категории качества"
+p_typ = "Физ/юр. лицо"
+r_debt_id = "Ссылка на debt"
+birth_place = "Место рождения"
+ban_reg_act_flag = "Флаг \"Запрет на проведение регистр. действий с имущ.\""
+ban_reg_act_dt = "Дата наложения запрета на проведение регистр. действий"
+verification_dt = "Дата подтверждения имущества"
+search_dt = "Дата объявления имущества в розыск"
+finish_search_dt = "Дата окончания розыска имущества"
+arrest_dt = "Дата ареста"
+cancel_arrest_dt = "Дата снятия ареста"
+value_dt = "Дата оценки"
+r_valuer_id = "Оценщик, ссылка на property_valuer"
+request_sum = "Требуемая стоимость имущества при обжаловании"
+person_real_dt = "Дата начала самост. реализации должником"
+commission_dt = "Дата начала реализации на ком. нач."
+auction_sum = "Выставленная стоимость"
+auction_dt = "Дата торгов"
+realization_dt = "Фактическая дата реализации"
+realization_sum = "Сумма реализации"
+offer_dt = "Дата предложения СПИ (суд. приставом-исполнителем) принять нереализ. имущество"
+offer_sum = "Предложенная СПИ стоимость"
+answer_dt = "Дата ответа на предложение СПИ"
+ogrn = "ОГРН"
+okved = "ОКВЕД"
+okpo = "ОКПО"
+r_account = "Расчетный счет"
+k_account = "Кор. счет"
+b_name = "Банк"
+bik = "БИК"
+[person_property.relations]
+r_person_id = "person.id"
+r_debt_id = "debt.id"
+r_valuer_id = "property_valuer.id"
+# --- Конец Имущество должника ---
+
+
+# --- Начало Настройка отображения результатов контакта ---
+[contact_result_set]
+table = "Настройка отображения результатов контакта"
+[contact_result_set.columns]
+typ = "Тип контакта (словарь №3)"
+text = "Текст в дереве"
+box_height = "Высота клетки"
+box_width = "Ширина клетки"
+box_color = "Цвет клетки"
+box_shape = "Форма клетки"
+code = "Код результата контакта"
+r_id = "Ссылка на верхний элемент"
+cur_index = "Упорядочивание среди вершин-братьев"
+fill_dsc = "Ввод комментария"
+fill_prom = "Ввод обещания"
+fill_calc = "Ввод платежа"
+fill_reject = "Ввод отказа"
+fill_recall = "Ввод даты перезвона"
+fill_forward = "Ввод перевода разговора"
+fill_wrong = "Ввод неверного номера"
+fill_reason = "Ввод причины возникновения долга"
+is_success = "Признак успешного контакта"
+conf_visit = "Признак осуществления намеченного выезда"
+fd = "Дата начала жизни записи"
+td = "Дата конца жизни записи"
+score = "Оценка, на которую будет повышаться/понижаться приоритет"
+flag_max_score = "Флаг \"Max+1\", означает установку приоритета в максимальное значение"
+r_scenario_id = "Ссылка на id формулы для автосценария"
+flag_delete_autodialer = "Удалять должника с автообзвона"
+flag_visit_time = "Ввод даты, когда необходим выезд"
+flag_delete_autoinf = "Удалять должника с автоинформатора"
+flag_link = "Прикрепить ссылку на файл"
+depart = "Ти оператора (soft, hard)"
+custom_status = "Пользовательский статус (словарь №6, код больше 100)"
+flag_prom_trans = "Перевод на оператора, зарегистрировавшего контакт"
+dialer_call_result = "Код результата автодайлера"
+is_not_contact = "Признак \"Контакт не состоялся\""
+subtyp = "Подтип (для отчетов) (словарь №111)"
+use_value_n1 = " Оценка 1"
+use_value_n2 = " Оценка 2"
+status_change_reason = "Регистрация причины смены пользовательского статуса (не показывать, не обязательно, обязательно)"
+quality = "Код качества (словарь №114)"
+newxt_call_day = "Кол-во дней до следующего звонка"
+reg_unvisibl = "Флаг \"Не показывать узел при ручной регистрации\""
+fill_call_reason = "Указать причину звонка"
+change_dt = "Дата изменения записи"
+unvisible = "Флаг, не показывать в списке контактов"
+fill_doc_attach = "Необходимость прикрепления файла"
+fill_paymentschedule = "Ввод графика платежей"
+task_actualize = "Флаг \"Актуализировать задачи\""
+r_debt_msg_id = "Ссылка на debt_msg"
+auto_verification_status = "Признак автоматической верификации контактной информации по результату исхода: 0 - не определено, 1 - успешно, 2 - не успешно (кандидат на удаление)"
+fill_discount = "Предложить акцию"
+fill_new_phone_number = "Ввод нового номера должника"
+fill_autocomment = "Ввод автокомментария"
+fill_contact_face = "Ввод ФИО конт. лица"
+fill_verification = "Признак верификации"
+fill_questionary = "Список кодов словаря №157 через запятую - список анкет, заполняемых пользователем для данного узла"
+fill_autocomments = "Выбор из несколькиз автокомментариев"
+tree_typ = "Тип дерева контактов (словарь №257)"
+mark1 = "Значение для изменения атрибута debt.mark1"
+mark2 = "Значение для изменения атрибута debt.mark2"
+mark3 = "Значение для изменения атрибута debt.mark3"
+mark4 = "Значение для изменения атрибута debt.mark4"
+[contact_result_set.relations]
+r_id = "contact_result_set.id"
+r_debt_msg_id = "debt_msg.id"
+# --- Конец Настройка отображения результатов контакта ---
+
+
+# --- Начало Лог действий оператора ---
+[actions]
+table = "Начало Лог действий оператора"
+[actions.columns]
+r_user_id = "Ссылка на users"
+dt = "Дата совершения действия"
+module = "Модуль (словарь №1)"
+typ = "Тип действия (словарь №2)"
+machine = "Имя компьютера"
+r_person_id = "Ссылка на person"
+dsc = "Комментарий"
+duration = "Длительность"
+mod_version = "Поле в разработке"
+[actions.relations]
+r_user_id = "users.id"
+r_person_id = "person.id"
+# --- Конец Лог действий оператора ---
+
+
+# --- Начало Курсы валют ---
+[cur_history]
+table = "Курсы валют"
+[cur_history.columns]
+r_currency_id = "Ссылка на currency"
+dt = "Дата"
+rate = "Значения курса на дату по отношению к рублю"
+[cur_history.relations]
+r_currency_id = "currency.id"
+# --- Конец Курсы валют ---
+
+
+# --- Начало Словари ---
+[dict_name]
+table = "Словари"
+[dict_name.columns]
+code = "Номер словаря"
+name = "Название словаря"
+r_code = "Код родительского словаря"
+typ = "1 - системный, 2 - общий"
+kind = "Поле не используется"
+not_use = "Признак отсутствия использования словаря у Клиента. 1 - словарь не используется, иначе - используется"
+[dict_name.relations]
+r_code = "dict_name.code"
+# --- Конец Словари ---
+
+
+# --- Начало Словарные термины ---
+[dict]
+table = "Словарные термины"
+[dict.columns]
+code = "Номер термина"
+parent_id = "Ссылка на code описателя словаря"
+name = "Текст термина"
+r_code = "Ссылка на термин родтельского словаря"
+typ = "1 - системный, 2 - общий"
+change_dt = "Дата изменения записи"
+is_close = "Признак использования термина 0 - используется, 1 - не используется"
+kind = "Поле не используется"
+[dict.relations]
+parent_id = "dict_name.code"
+r_code = "dict.code"
+# --- Конец Словарные термины ---
+
+
+# --- Начало Подразделения ---
+[department]
+table = "Подразделения"
+[department.columns]
+dep = "Код подразделения"
+name = "Название подразделения"
+r_dep = "Ссылка на родительское подразделение"
+box_height = "Высота"
+box_width = "Ширина"
+box_color = "Цвет"
+box_shape = "Форма"
+box_image = "Изображение"
+box_imalign = "Выравнивание изображения"
+dsc = "Комментарий"
+filial = "Филиал (словарь №61)"
+[department.relations]
+r_dep = "department.dep"
+# --- Конец Подразделения ---
+
+
+# --- Начало График рабочего времени ---
+[timetable]
+table = "График рабочего времени"
+[timetable.columns]
+name = "Название"
+typ = " 1 - понедельный, 2 - периодичный"
+period = "Размер периода"
+start_date = "Начало отсчета для периодического графика"
+check_start_time = "1 - контролировать ежед. приход на работу, 0 - нет"
+check_day_time = "1 - контролировать ежедневную отработку, 0 - нет"
+check_period_time = "1 - контролировать отработку за период, 0 - нет"
+[timetable.relations]
+# --- Конец График рабочего времени ---
+
+
+# --- Начало Интервал графика рабочего времени ---
+[timetable_hours]
+table = "Интервал графика рабочего времени"
+[timetable_hours.columns]
+parent_id = "Ссылка на timetable"
+day_number = "Номер для в периоде (начиная с 1)"
+period_number = "Номер периода внутри дня (начиная с 1)"
+time_from = "Время начала интервала"
+time_to = "Время конца нтрвала"
+is_add = "0 - основной, 1 - дополнительный"
+[timetable_hours.relations]
+# --- Конец Интервал графика рабочего времени ---
+
+
+# --- Начало Роли пользователей системы ---
+[role]
+table = "Роли пользователей системы"
+[role.columns]
+name = "Название"
+dsc = "Описание"
+[role.relations]
+# --- Конец Роли пользователей системы ---
+
+
+# --- Начало Элементарные доступы ---
+[permit]
+table = "Элементарные доступы"
+[permit.columns]
+name = "Системное имя"
+typ = "Тип 1 - boolean, 2 - integer"
+r_modules_id = "Словарь №1"
+dsc = "Описание"
+def_value_i = "Значение по умолчанию для дотупа типа Integer"
+def_value_c = "Значение по умолчанию для доступов стокового типа"
+[permit.relations]
+# --- Конец Элементарные доступы ---
+
+
+# --- Начало Связь доступы-роли ---
+[permit_role]
+table = "Связь доступы-роли"
+[permit_role.columns]
+r_role_id = "Ссылка на role"
+r_permit_ind = "Ссылка на permit"
+value_b = "Значение, если тип boolean"
+value_i = "Значение, если тип integer"
+dsc = "Описание"
+value_c = "Значение строкового типа"
+[permit_role.relations]
+r_role_id = "role.id"
+r_permit_ind = "permit.id"
+# --- Конец Связь доступы-роли ---
+
+
+# --- Начало Пользователи системы ---
+[users]
+table = "Пользователи системы"
+[users.columns]
+login = "Логин"
+password = "Пароль в зашифрованном виде"
+f = "Фамилия"
+i = "Имя"
+o = "Отчество"
+r_role_id = "Ссылка на роль"
+block_flag = "Признак \"заблокирован\""
+dsc = "Комментарий"
+depart = "Тип (soft или hard)"
+int_num = "Внутренний номер"
+mob_num = "Мобильный номер"
+r_timetable_id = "Ссылка на график"
+r_department_id = "Ссылка на подразделение"
+depart_status = "0 или null - сотрудник, 1 - руководитель, 2 - заместитель"
+position = "Должность"
+rank = "Ранг"
+win_user_name = "Имя пользователя Windows"
+work_num = "Рабочий телефон"
+prom_trans = "Флаг \"перезакреплять при обещании\""
+filial = "Филиал (словарь №61)"
+r_collection_plan_id = "Ссылка на план сбора"
+"dt1$" = "Техническое поле"
+mail_sign = "Подпись"
+agent_id = "ID агента (идентификатор агента в сервере телефонии)"
+agent_number = "Номер агента"
+is_virtual = "Признак виртуальости оператора (1 - виртуальный)"
+start_work_date = "Дата выхода сотрудника в штат"
+oper_id = "Поле не используется"
+email = "Электронная почта оператора"
+emp_number = "Табельный номер"
+finish_work_date = "Дата увольнения"
+password_change_dt = "Дата последней смены пароля"
+sid = "Номер сессии Android"
+sid_dt = "Дата последней активности Android"
+work_address = "Рабочий адрес"
+work_zip_code = "Индекс рабочего адреса"
+agent_name = "Имя агента"
+agent_pass = "Пароль агента"
+r_department_id2 = "Ссылка на родительское подразделение"
+skill = "Квалификация пользователя (словарь №237)"
+latitude = "Геолокация - широта"
+longitude = "Геолокация - долгота"
+skin = "Ссылка на скин (словарь №241)"
+typ = "Поле не используется"
+dict_value_1 = "Техническое поле"
+[users.relations]
+r_role_id = "role.id"
+r_timetable_id = "timetable.id"
+r_department_id = "department.id"
+r_department_id2 = "department.id"
+# --- Конец Пользователи системы ---
