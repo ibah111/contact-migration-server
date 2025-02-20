@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import SMB2 from '@marsaud/smb2-promise';
+import * as SMB2 from '@marsaud/smb2-promise';
 
 @Injectable()
 export default class SmbService {
