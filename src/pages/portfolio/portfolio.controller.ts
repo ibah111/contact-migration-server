@@ -11,4 +11,9 @@ export default class PortfolioController {
   async prots() {
     return await this.service.ports();
   }
+
+  @Get('docAttach')
+  async docAttach() {
+    return await this.service.docAttach();
+  }
 }
