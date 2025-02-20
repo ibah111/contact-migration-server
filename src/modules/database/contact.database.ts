@@ -20,6 +20,7 @@ import { Dialect } from 'sequelize';
           database: config.get<string>('database'),
           password: config.get<string>('password'),
           username: config.get<string>('username'),
+          logging: false,
         };
       },
     }),
