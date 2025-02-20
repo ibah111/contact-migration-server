@@ -2,7 +2,6 @@ import Models from '@contact/models';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@sql-tools/nestjs-sequelize';
-import { Dialect } from 'sequelize';
 
 @Module({
   imports: [
