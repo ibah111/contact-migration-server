@@ -6,13 +6,14 @@ import { ConfigModule } from '@nestjs/config';
 import { node } from './main';
 import { database } from './config/contact.database.config';
 import PagesModule from './pages/pages.module';
+import { smb } from './config/smb.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env.dev',
-      load: [database],
+      envFilePath: ['.env.dev', '.env.smb'],
+      load: [database, smb],
     }),
     ModulesModule,
     PagesModule,
