@@ -1,23 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as SMB2 from '@marsaud/smb2-promise';
+const SMB2 = require('smb2');
 
 @Injectable()
 export default class SmbService {
   //smb2 type
-  private smb: SMB2;
+  private smb: any;
   constructor(private readonly config: ConfigService) {
     this.smb = new SMB2({
-      share: this.config.get<string>('share')!,
-      domain: this.config.get<string>('domain')!,
-      username: this.config.get<string>('smb_username')!,
-      password: this.config.get<string>('smb_password')!,
+      share: '\\\\newct.usb.ru\\Luxbase',
+      domain: 'usb.ru',
+      username: 'Contact-SMB',
+      password: 'Contact-SMB',
+      port: 445,
     });
   }
 
   async exists(path: string) {
     return new Promise((resolve, reject) => {
-      resolve(true);
+      console.log(this.smb);
+      this.smb.readdir('\\', (err, files) => {
+        if (err) reject(err);
+        else console.log(files);
+      });
     });
   }
 }
