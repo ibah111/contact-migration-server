@@ -1,8 +1,8 @@
 import { Dict, DocAttach, Portfolio } from '@contact/models';
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@sql-tools/nestjs-sequelize';
-import PortfolioController from './portfolio.controller';
-import PortfolioService from './portfolio.service';
+import PortfolioController from './smb.page.controller';
+import PortfolioService from './smb.page.service';
 import SmbModule from 'src/modules/smb/smb.module';
 
 @Module({
@@ -13,4 +13,4 @@ import SmbModule from 'src/modules/smb/smb.module';
   controllers: [PortfolioController],
   providers: [PortfolioService],
 })
-export class PortfolioModule {}
+export class SmbPageModule {}

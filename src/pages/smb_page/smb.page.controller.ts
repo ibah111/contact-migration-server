@@ -1,9 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import PortfolioService from './portfolio.service';
+import PortfolioService from './smb.page.service';
 
-@ApiTags('portfolio')
-@Controller('portfolio')
+@ApiTags('smb_page')
+@Controller('smb_page')
 export default class PortfolioController {
   constructor(private readonly service: PortfolioService) {}
 
@@ -12,8 +12,13 @@ export default class PortfolioController {
     return await this.service.ports();
   }
 
-  @Get('docAttach')
-  async docAttach() {
-    return await this.service.docAttach();
+  @Get('exists')
+  async exists() {
+    return await this.service.exists();
+  }
+
+  @Get('readdir')
+  async readdir() {
+    return await this.service.readdir();
   }
 }

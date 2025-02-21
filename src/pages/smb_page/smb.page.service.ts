@@ -15,16 +15,19 @@ export default class PortfolioService {
     private readonly smb_service: SmbService,
   ) {}
 
-  async docAttach() {
-    const docAttach = await this.modelDocAttach.findAll({
+  async exists() {
+    const doc = await this.modelDocAttach.findOne({
+      where: {
+        id: 1533500,
+      },
+      rejectOnEmpty: true,
       attributes: [
+        'id',
         'obj_id',
         'r_id',
         'name',
         'filebody',
         'is_active',
-        //'vers1',
-        //'vers2',
         'r_user_id',
         'dt',
         'number',
@@ -33,25 +36,27 @@ export default class PortfolioService {
         'filename',
         'attach_typ',
       ],
-      limit: 5,
+      limit: 1,
       include: [
         {
           model: Dict,
         },
       ],
     });
-    for (const doc of docAttach) {
-      const rel = doc.REL_SERVER_PATH;
-      const filename = doc.FILE_SERVER_NAME;
-      const path = `${rel}\\${filename}`;
-      const exists = await this.smb_service.exists(path);
-      const obj = {
-        doc_id: doc.id,
-        path,
-        exists,
-      };
-      console.log(obj);
-    }
+    const rel = doc.REL_SERVER_PATH;
+    const filename = doc.FILE_SERVER_NAME;
+    const path = `${rel}\\${filename}`;
+    const exists = await this.smb_service.exists(path);
+    const obj = {
+      doc_id: doc.id,
+      path,
+      exists,
+    };
+    console.log('------');
+  }
+
+  async readdir() {
+    return await this.smb_service.readdir();
   }
 
   async ports() {

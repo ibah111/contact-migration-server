@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { PortfolioModule } from './portfolio/portfolio.module';
+import { SmbPageModule } from './smb_page/smb.page.module';
 
 @Module({
-  imports: [PortfolioModule],
+  imports: [SmbPageModule],
 })
 export default class PagesModule {}
