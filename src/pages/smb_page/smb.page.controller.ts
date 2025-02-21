@@ -4,7 +4,7 @@ import PortfolioService from './smb.page.service';
 
 @ApiTags('smb_page')
 @Controller('smb_page')
-export default class PortfolioController {
+export default class SmbPageController {
   constructor(private readonly service: PortfolioService) {}
 
   @Get('all')

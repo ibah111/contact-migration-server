@@ -4,7 +4,7 @@ import { InjectModel } from '@sql-tools/nestjs-sequelize';
 import SmbService from 'src/modules/smb/smb.service';
 
 @Injectable()
-export default class PortfolioService {
+export default class SmbPageService {
   constructor(
     @InjectModel(Portfolio, 'contact')
     private readonly modelPortfolio: typeof Portfolio,
@@ -45,14 +45,14 @@ export default class PortfolioService {
     });
     const rel = doc.REL_SERVER_PATH;
     const filename = doc.FILE_SERVER_NAME;
-    const path = `${rel}\\${filename}`;
+    const path = `Docattach${rel}${filename}`;
     const exists = await this.smb_service.exists(path);
     const obj = {
-      doc_id: doc.id,
+      doc_id: doc.id! as number,
       path,
       exists,
     };
-    console.log('------');
+    return obj;
   }
 
   async readdir() {

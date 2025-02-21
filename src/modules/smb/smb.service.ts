@@ -17,13 +17,8 @@ export default class SmbService {
   }
   //"\\newct\luxbase\Docattach\0\0DD92B61-6775-4B51-8233-3CE4BD6E4656..pdf"
   async exists(path: string) {
-    const fullPath = `Docattach${path}`
-      .replace('..', '.')
-      .replace('\\\\', '\\');
-
-    const myOwn = 'Docattach\\0\\0DD92B61-6775-4B51-8233-3CE4BD6E4656..pdf';
     return new Promise((resolve, reject) => {
-      this.smb.exists(myOwn, (err: any, exists: any) => {
+      this.smb.exists(path, (err: any, exists: any) => {
         if (err) reject(err);
         console.log('exists? = ', exists);
         resolve(exists);
