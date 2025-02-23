@@ -15,10 +15,10 @@ export default class SmbPageService {
     private readonly smb_service: SmbService,
   ) {}
 
-  async exists() {
+  async docAttachPath(id: number) {
     const doc = await this.modelDocAttach.findOne({
       where: {
-        id: 1533500,
+        id,
       },
       rejectOnEmpty: true,
       attributes: [
@@ -45,26 +45,42 @@ export default class SmbPageService {
     });
     const rel = doc.REL_SERVER_PATH;
     const filename = doc.FILE_SERVER_NAME;
-    const path = `Docattach${rel}${filename}`;
-    const exists = await this.smb_service.exists(path);
-    const obj = {
-      doc_id: doc.id! as number,
-      path,
-      exists,
+    return {
+      id,
+      rel,
+      filename,
     };
-    return obj;
   }
 
-  async readdir() {
-    return await this.smb_service.readdir();
-  }
-
-  async ports() {
+  async exists(path: string) {
+    const exists = await this.smb_service.exists(path);
     try {
-      return await this.modelPortfolio.findAll({
-        limit: 100,
-      });
+      return {
+        path,
+        exists,
+      };
     } catch (error) {
+      console.log('error', error);
+      return error;
+    }
+  }
+
+  async readdir(path: string) {
+    const readdir = await this.smb_service.readdir(path);
+    try {
+      return readdir;
+    } catch (error) {
+      console.log('error'.red, error);
+      return error;
+    }
+  }
+
+  async readFile(path: string) {
+    const readFile = await this.smb_service.readFile(path);
+    try {
+      return readFile;
+    } catch (error) {
+      console.log('error'.red, error);
       return error;
     }
   }
