@@ -1,24 +1,25 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import PortfolioService from './smb.page.service';
+import { SMBPathInput } from './smb.input';
 
 @ApiTags('smb_page')
 @Controller('smb_page')
 export default class SmbPageController {
   constructor(private readonly service: PortfolioService) {}
 
-  @Get('readdir')
-  async prots(@Query('path') path: string) {
+  @Post('readdir')
+  async readdir(@Body() { path }: SMBPathInput) {
     return await this.service.readdir(path);
   }
 
-  @Get('exists')
-  async exists(@Query('path') path: string) {
+  @Post('exists')
+  async exists(@Body() { path }: SMBPathInput) {
     return await this.service.exists(path);
   }
 
-  @Get('readFile')
-  async readFile(@Query('path') path: string) {
+  @Post('readFile')
+  async readFile(@Body('path') { path }: SMBPathInput) {
     return await this.service.readFile(path);
   }
 }
