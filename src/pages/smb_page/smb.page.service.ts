@@ -52,36 +52,15 @@ export default class SmbPageService {
     };
   }
 
-  async exists(path: string) {
-    const exists = await this.smb_service.exists(path);
-    try {
-      return {
-        path,
-        exists,
-      };
-    } catch (error) {
-      console.log('error', error);
-      return error;
-    }
+  async readdir(path: string) {
+    return await this.smb_service.readdir(path);
   }
 
-  async readdir(path: string) {
-    const readdir = await this.smb_service.readdir(path);
-    try {
-      return readdir;
-    } catch (error) {
-      console.log('error'.red, error);
-      return error;
-    }
+  async exists(path: string) {
+    return await this.smb_service.exists(path);
   }
 
   async readFile(path: string) {
-    const readFile = await this.smb_service.readFile(path);
-    try {
-      return readFile;
-    } catch (error) {
-      console.log('error'.red, error);
-      return error;
-    }
+    return await this.smb_service.readFile(path);
   }
 }
