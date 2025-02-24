@@ -35,6 +35,7 @@
     "@sql-tools/nestjs-sequelize": "^10.0.0",
     "@sql-tools/sequelize": "^6.32.0",
     "@sql-tools/sequelize-typescript": "^2.1.5",
+    "basic-ftp": "^5.0.5",
     "colors": "^1.4.0",
     "dotenv": "^16.4.7",
     "reflect-metadata": "^0.2.2",
