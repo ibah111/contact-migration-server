@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Client } from 'basic-ftp';
+import { Client as FTPClient } from 'basic-ftp';
 
 @Injectable()
 export default class FTPService implements FTPServiceInterface {
-  private client: Client;
+  private ftp: FTPClient;
   private host: string;
   private user: string;
   private password: string;
@@ -15,56 +15,45 @@ export default class FTPService implements FTPServiceInterface {
     this.password = this.config.get<string>('ftp_password')!;
   }
   async connect(): Promise<void> {
-    await this.client
-      .access({
-        host: this.host,
-        user: this.user,
-        password: this.password,
-      })
-      .then(() => {
-        console.log('ftp connect'.green);
-      })
-      .catch(() => {
-        console.log('ftp catch error');
-      });
+    console.log(this.ftp);
   }
   async disconnect(): Promise<void> {
-    this.client.close();
+    this.ftp.close();
     console.log('ftp disconnect');
   }
   // Загрузка файла на FTP
   async uploadFile(localPath: string, remotePath: string): Promise<void> {
-    await this.client.uploadFrom(localPath, remotePath);
+    await this.ftp.uploadFrom(localPath, remotePath);
   }
 
   // Скачивание файла с FTP
   async downloadFile(remotePath: string, localPath: string): Promise<void> {
-    await this.client.downloadTo(localPath, remotePath);
+    await this.ftp.downloadTo(localPath, remotePath);
   }
 
   // Переименование файла на FTP
   async renameFile(oldPath: string, newPath: string): Promise<void> {
-    await this.client.rename(oldPath, newPath);
+    await this.ftp.rename(oldPath, newPath);
   }
 
   // Удаление файла с FTP
   async deleteFile(remotePath: string): Promise<void> {
-    await this.client.remove(remotePath);
+    await this.ftp.remove(remotePath);
   }
 
   // Создание директории на FTP
   async createDirectory(remotePath: string): Promise<void> {
-    await this.client.ensureDir(remotePath);
+    await this.ftp.ensureDir(remotePath);
   }
 
   // Удаление директории с FTP
   async removeDirectory(remotePath: string): Promise<void> {
-    await this.client.removeDir(remotePath);
+    await this.ftp.removeDir(remotePath);
   }
 
   // Получение списка файлов в директории
   async listFiles(remotePath: string): Promise<string[]> {
-    const list = await this.client.list(remotePath);
+    const list = await this.ftp.list(remotePath);
     return list.map((item) => item.name);
   }
 }
