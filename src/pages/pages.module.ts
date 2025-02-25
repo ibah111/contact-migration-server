@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SmbPageModule } from './smb_page/smb.page.module';
+import { SmbPageModule } from './smb/smb.page.module';
 
 @Module({
   imports: [SmbPageModule],
