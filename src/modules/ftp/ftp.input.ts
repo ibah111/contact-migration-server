@@ -8,7 +8,7 @@ export interface FtpProps {
 
 export class FtpInput {
   @ApiProperty({
-    default: '/TEST_IBAH',
+    default: '/TEST_IBAH/',
   })
   path: string;
 }
