@@ -1,8 +1,29 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+  Query,
+  Req,
+  UnsupportedMediaTypeException,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import FTPService from './ftp.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { FtpInput } from './ftp.input';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { FastifyRequest } from 'fastify';
+import * as fs from 'fs';
+import { promisify } from 'util';
+import { pipeline } from 'stream';
+
+const pump = promisify(pipeline);
 
 @Controller('ftp')
 export default class FtpController {
@@ -36,5 +57,39 @@ export default class FtpController {
       path,
     });
     await this.ftpService.close();
+  }
+
+  @Post('upload')
+  @ApiOperation({ summary: 'Загрузка файла по ФТП' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file', {}))
+  async uploadFile(
+    @Query() { path }: FtpInput,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new HttpException('No file provided', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.ftpService.connect();
+    const upload_path = `/${path}${file.filename}`;
+    await this.ftpService.uploadFile(file.buffer, upload_path);
+    await this.ftpService.close();
+
+    return {
+      message: 'File uploaded successfully',
+      path: upload_path,
+    };
   }
 }

@@ -32,9 +32,9 @@ export default class FTPService {
     }
   }
 
-  async uploadFile(localFilePath: string, remoteFilePath: string) {
+  async uploadFile(buffer: Buffer, remoteFilePath: string) {
     try {
-      const fileStream = createReadStream(localFilePath);
+      const fileStream = createReadStream(buffer);
       await this.client
         .uploadFrom(fileStream, remoteFilePath)
         .then(() => console.log('File uploaded:'.green, remoteFilePath));
