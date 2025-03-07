@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as ftp from 'basic-ftp';
 import { FtpInput, FtpProps } from './ftp.input';
 import { ConfigService } from '@nestjs/config';
+import { createReadStream } from 'fs';
 
 @Injectable()
 export default class FTPService {
@@ -26,17 +27,19 @@ export default class FTPService {
       });
       console.log('FTP Connected');
     } catch (error) {
-      console.error('FTP Connection Error:', error);
+      console.error('FTP Connection Error:'.red, error);
       throw error;
     }
   }
 
   async uploadFile(localFilePath: string, remoteFilePath: string) {
     try {
-      await this.client.uploadFrom(localFilePath, remoteFilePath);
-      console.log('File uploaded:', remoteFilePath);
+      const fileStream = createReadStream(localFilePath);
+      await this.client
+        .uploadFrom(fileStream, remoteFilePath)
+        .then(() => console.log('File uploaded:'.green, remoteFilePath));
     } catch (error) {
-      console.error('FTP Upload Error:', error);
+      console.error('FTP Upload Error:'.red, error);
       throw error;
     }
   }
@@ -44,9 +47,9 @@ export default class FTPService {
   async downloadFile(remoteFilePath: string, localFilePath: string) {
     try {
       await this.client.downloadTo(localFilePath, remoteFilePath);
-      console.log('File downloaded:', localFilePath);
+      console.log('File downloaded:'.green, localFilePath);
     } catch (error) {
-      console.error('FTP Download Error:', error);
+      console.error('FTP Download Error:'.red, error);
       throw error;
     }
   }
@@ -57,7 +60,7 @@ export default class FTPService {
       console.log('Files:', files);
       return files;
     } catch (error) {
-      console.error('FTP List Error:', error);
+      console.error('FTP List Error:'.red, error);
       throw error;
     }
   }
