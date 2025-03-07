@@ -2684,7 +2684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:^5.0.0":
+"@types/express@npm:*, @types/express@npm:^5.0.0":
   version: 5.0.0
   resolution: "@types/express@npm:5.0.0"
   dependencies:
@@ -2779,6 +2779,15 @@ __metadata:
   version: 2.1.0
   resolution: "@types/ms@npm:2.1.0"
   checksum: 10/532d2ebb91937ccc4a89389715e5b47d4c66e708d15942fe6cc25add6dc37b2be058230a327dd50f43f89b8b6d5d52b74685a9e8f70516edfc9bdd6be910eff4
+  languageName: node
+  linkType: hard
+
+"@types/multer@npm:^1":
+  version: 1.4.12
+  resolution: "@types/multer@npm:1.4.12"
+  dependencies:
+    "@types/express": "npm:*"
+  checksum: 10/3d2b32da58ddd67f972d4ef1021492f78d65f33f936b6fb25dd461bb6cc7b03bfd1de1a11562c4310680dac8054e4398038db51767a0ffbf1fe62457b3706e95
   languageName: node
   linkType: hard
 
@@ -8368,7 +8377,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multer@npm:1.4.5-lts.1":
+"multer@npm:1.4.5-lts.1, multer@npm:^1.4.5-lts.1":
   version: 1.4.5-lts.1
   resolution: "multer@npm:1.4.5-lts.1"
   dependencies:
@@ -10082,6 +10091,7 @@ __metadata:
     "@swc/core": "npm:^1.10.7"
     "@types/express": "npm:^5.0.0"
     "@types/jest": "npm:^29.5.14"
+    "@types/multer": "npm:^1"
     "@types/node": "npm:^22.10.7"
     "@types/smb2": "npm:^0"
     "@types/supertest": "npm:^6.0.2"
@@ -10093,6 +10103,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.2.2"
     globals: "npm:^15.14.0"
     jest: "npm:^29.7.0"
+    multer: "npm:^1.4.5-lts.1"
     nestjs-basic-ftp: "npm:^0.0.5"
     prettier: "npm:^3.4.2"
     reflect-metadata: "npm:^0.2.2"
