@@ -7,6 +7,7 @@ import 'colors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getSwaggerOptions, getSwaggerOptionsCustom } from './utils/swagger';
 import AppModule from './app.module';
+import multipart from '@fastify/multipart';
 
 // For definition of application mode
 /**
@@ -38,6 +39,7 @@ async function bootstrap() {
     AppModule,
     options.adapter,
   );
+  app.register(multipart);
   const config = new DocumentBuilder().setTitle('').setVersion('').build();
   const document = SwaggerModule.createDocument(
     app,
