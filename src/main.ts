@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -7,6 +6,7 @@ import {
 import 'colors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getSwaggerOptions, getSwaggerOptionsCustom } from './utils/swagger';
+import AppModule from './app.module';
 
 // For definition of application mode
 /**
