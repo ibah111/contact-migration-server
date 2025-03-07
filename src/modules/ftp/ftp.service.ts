@@ -1,59 +1,78 @@
 import { Injectable } from '@nestjs/common';
+import * as ftp from 'basic-ftp';
+import { FtpInput, FtpProps } from './ftp.input';
 import { ConfigService } from '@nestjs/config';
-import { Client as FTPClient } from 'basic-ftp';
 
 @Injectable()
-export default class FTPService implements FTPServiceInterface {
-  private ftp: FTPClient;
-  private host: string;
-  private user: string;
-  private password: string;
+export default class FTPService {
+  private client: ftp.Client;
+  private ftpProps: FtpProps;
 
   constructor(private readonly config: ConfigService) {
-    this.host = this.config.get<string>('ftp_host')!;
-    this.user = this.config.get<string>('ftp_user')!;
-    this.password = this.config.get<string>('ftp_password')!;
-  }
-  async connect(): Promise<void> {
-    console.log(this.ftp);
-  }
-  async disconnect(): Promise<void> {
-    this.ftp.close();
-    console.log('ftp disconnect');
-  }
-  // Загрузка файла на FTP
-  async uploadFile(localPath: string, remotePath: string): Promise<void> {
-    await this.ftp.uploadFrom(localPath, remotePath);
+    this.client = new ftp.Client();
+    this.client.ftp.verbose = true; // Логирование (можно отключить)
+    this.ftpProps = {
+      host: config.get<string>('ftp_host')!,
+      user: config.get<string>('ftp_login')!,
+      password: config.get<string>('ftp_password')!,
+    };
   }
 
-  // Скачивание файла с FTP
-  async downloadFile(remotePath: string, localPath: string): Promise<void> {
-    await this.ftp.downloadTo(localPath, remotePath);
+  async connect() {
+    try {
+      await this.client.access({
+        ...this.ftpProps,
+        secure: false, // Указать `true`, если требуется защищенное соединение
+      });
+      console.log('FTP Connected');
+    } catch (error) {
+      console.error('FTP Connection Error:', error);
+      throw error;
+    }
   }
 
-  // Переименование файла на FTP
-  async renameFile(oldPath: string, newPath: string): Promise<void> {
-    await this.ftp.rename(oldPath, newPath);
+  async uploadFile(localFilePath: string, remoteFilePath: string) {
+    try {
+      await this.client.uploadFrom(localFilePath, remoteFilePath);
+      console.log('File uploaded:', remoteFilePath);
+    } catch (error) {
+      console.error('FTP Upload Error:', error);
+      throw error;
+    }
   }
 
-  // Удаление файла с FTP
-  async deleteFile(remotePath: string): Promise<void> {
-    await this.ftp.remove(remotePath);
+  async downloadFile(remoteFilePath: string, localFilePath: string) {
+    try {
+      await this.client.downloadTo(localFilePath, remoteFilePath);
+      console.log('File downloaded:', localFilePath);
+    } catch (error) {
+      console.error('FTP Download Error:', error);
+      throw error;
+    }
   }
 
-  // Создание директории на FTP
-  async createDirectory(remotePath: string): Promise<void> {
-    await this.ftp.ensureDir(remotePath);
+  async listFiles(remotePath: string) {
+    try {
+      const files = await this.client.list(remotePath);
+      console.log('Files:', files);
+      return files;
+    } catch (error) {
+      console.error('FTP List Error:', error);
+      throw error;
+    }
   }
 
-  // Удаление директории с FTP
-  async removeDirectory(remotePath: string): Promise<void> {
-    await this.ftp.removeDir(remotePath);
+  async mkDir({ path }: FtpInput) {
+    try {
+      await this.client.ensureDir(path);
+    } catch (error) {
+      console.log('ensureDir error');
+      throw Error(error);
+    }
   }
 
-  // Получение списка файлов в директории
-  async listFiles(remotePath: string): Promise<string[]> {
-    const list = await this.ftp.list(remotePath);
-    return list.map((item) => item.name);
+  async close() {
+    this.client.close();
+    console.log('FTP Connection closed');
   }
 }
