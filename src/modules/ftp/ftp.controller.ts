@@ -86,17 +86,23 @@ export default class FtpController {
     await this.ftpService.connect();
 
     // Загружаем файл напрямую через поток (без сохранения на диск)
-    await this.ftpService.uploadFile(
-      parts.file,
-      `${remotePath}${parts.filename}`,
-    );
-
+    try {
+      const FTPResponse = await this.ftpService.uploadFile(
+        parts.file,
+        `${remotePath}${parts.filename}`,
+      );
+      if (FTPResponse) {
+        return {
+          message: 'File uploaded successfully',
+          path: `${remotePath}${parts.filename}`,
+          FTPResponse,
+        };
+      }
+    } catch (error) {
+      const error_message = error.message;
+      throw new Error(error_message);
+    }
     // Закрываем соединение с FTP
     await this.ftpService.close();
-
-    return {
-      message: 'File uploaded successfully',
-      path: `${remotePath}${parts.filename}`,
-    };
   }
 }
