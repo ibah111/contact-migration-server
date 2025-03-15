@@ -3,6 +3,7 @@ import * as ftp from 'basic-ftp';
 import { FtpInput, FtpProps } from './ftp.input';
 import { ConfigService } from '@nestjs/config';
 import { createReadStream } from 'fs';
+import { Readable } from 'stream';
 
 @Injectable()
 export default class FTPService {
@@ -32,12 +33,12 @@ export default class FTPService {
     }
   }
 
-  async uploadFile(buffer: Buffer, remoteFilePath: string) {
+  async uploadFile(stream: NodeJS.ReadableStream, remoteFilePath: string) {
     try {
-      const fileStream = createReadStream(buffer);
-      await this.client
-        .uploadFrom(fileStream, remoteFilePath)
-        .then(() => console.log('File uploaded:'.green, remoteFilePath));
+      const nodeStream = Readable.from(stream as any);
+      await this.client.uploadFrom(nodeStream, remoteFilePath).then((res) => {
+        console.log('ftp responce'.green, res);
+      });
     } catch (error) {
       console.error('FTP Upload Error:'.red, error);
       throw error;

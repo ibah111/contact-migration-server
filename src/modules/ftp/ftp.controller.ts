@@ -2,13 +2,10 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Post,
   Query,
   Req,
   UnsupportedMediaTypeException,
-  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import FTPService from './ftp.service';
@@ -16,8 +13,7 @@ import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { FtpInput } from './ftp.input';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
+import { join } from 'path';
 import { FastifyRequest } from 'fastify';
 import * as fs from 'fs';
 import { promisify } from 'util';
@@ -73,23 +69,34 @@ export default class FtpController {
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file', {}))
   async uploadFile(
-    @Query() { path }: FtpInput,
-    @UploadedFile() file: Express.Multer.File,
+    @Req() req: FastifyRequest,
+    @Query() { path: remotePath }: FtpInput,
   ) {
-    if (!file) {
-      throw new HttpException('No file provided', HttpStatus.BAD_REQUEST);
+    if (!req.isMultipart()) {
+      throw new UnsupportedMediaTypeException('Request is not multipart');
     }
 
+    const parts = await req.file();
+    if (!parts) {
+      throw new Error('No file uploaded');
+    }
+
+    // Подключаемся к FTP
     await this.ftpService.connect();
-    const upload_path = `/${path}${file.filename}`;
-    await this.ftpService.uploadFile(file.buffer, upload_path);
+
+    // Загружаем файл напрямую через поток (без сохранения на диск)
+    await this.ftpService.uploadFile(
+      parts.file,
+      `${remotePath}${parts.filename}`,
+    );
+
+    // Закрываем соединение с FTP
     await this.ftpService.close();
 
     return {
       message: 'File uploaded successfully',
-      path: upload_path,
+      path: `${remotePath}${parts.filename}`,
     };
   }
 }
