@@ -36,9 +36,12 @@ export default class FTPService {
   async uploadFile(stream: NodeJS.ReadableStream, remoteFilePath: string) {
     try {
       const nodeStream = Readable.from(stream as any);
-      await this.client.uploadFrom(nodeStream, remoteFilePath).then((res) => {
-        console.log('ftp responce'.green, res);
-      });
+      return await this.client
+        .uploadFrom(nodeStream, remoteFilePath)
+        .then((res) => {
+          console.log('FTP responce'.green, res);
+          return res;
+        });
     } catch (error) {
       console.error('FTP Upload Error:'.red, error);
       throw error;
