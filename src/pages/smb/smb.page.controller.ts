@@ -3,8 +3,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import PortfolioService from './smb.page.service';
 import { SMBPathInput } from './smb.input';
 
-@ApiTags('smb_page')
-@Controller('smb_page')
+@ApiTags('SMB Page')
+@Controller('smb')
 export default class SmbPageController {
   constructor(private readonly service: PortfolioService) {}
 
