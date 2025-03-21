@@ -22,8 +22,8 @@ export class SqliteDatabaseSeed implements OnModuleInit {
       await umzug.up();
       await this.seed();
     } catch (error) {
-      console.log(error);
-      throw error;
+      const error_message = error.message;
+      throw new Error(error_message);
     }
   }
   async seed() {
