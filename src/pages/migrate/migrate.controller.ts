@@ -8,10 +8,11 @@ export default class MigrateController {
 
   @Post('upload')
   private async upload(
-    @Body() { do_type_name, portfolio_id, include_type }: MigrateInput,
+    @Body()
+    { do_type_name, r_portfolio_id: portfolio_id, include_type }: MigrateInput,
   ) {
     return await this.migrateService.migrate({
-      portfolio_id,
+      r_portfolio_id: portfolio_id,
       do_type_name,
       include_type,
     });

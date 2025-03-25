@@ -11,13 +11,26 @@ export default class MigrateService {
   constructor(
     @InjectModel(Portfolio, 'contact')
     private readonly modelPortfolio: typeof Portfolio,
+    @InjectModel(Debt, 'contact')
+    private readonly modelDebt: typeof Debt,
     @InjectModel(DocAttach, 'contact')
     private readonly modelDocAttach: typeof DocAttach,
     @InjectModel(DO_Types, 'sqlite')
     private readonly modelDoTypes: typeof DO_Types,
   ) {}
 
-  async migrate({ portfolio_id, do_type_name, include_type }: MigrateInput) {
+  async migrate({ r_portfolio_id, do_type_name, include_type }: MigrateInput) {
+    console.log(
+      'r_portfolio_id:',
+      r_portfolio_id,
+      '\n',
+      'do_type_name:',
+      do_type_name,
+      '\n',
+      'include_type:',
+      include_type,
+      '\n',
+    );
     // const type = await this.modelDoTypes.findOne({
     //   where: {
     //         name: {
@@ -28,53 +41,85 @@ export default class MigrateService {
     // });
     try {
       const obj = {
-        1: LawAct,
-        2: LawExec,
+        1: {
+          name: 'LawActs',
+          model: LawAct,
+        },
+        2: {
+          name: 'LawExecs',
+          model: LawExec,
+        },
       };
       const model_to_search = obj[include_type];
 
-      return await this.modelPortfolio.findOne({
+      const portfolio = await this.modelPortfolio.findOne({
         logging: node === 'dev' ? console.log : false,
         attributes: ['id', 'name'],
+        rejectOnEmpty: new Error(`Портфель с id:"${r_portfolio_id}" не найден`),
         where: {
-          id: portfolio_id,
+          id: r_portfolio_id,
+        },
+      });
+      const debts = await this.modelDebt.findAndCountAll({
+        where: {
+          r_portfolio_id,
         },
         include: [
           {
-            attributes: ['id', 'name'],
-            model: Debt,
+            attributes: ['id'],
+            model: model_to_search.model,
             required: true,
             include: [
               {
-                attributes: ['id'],
-                model: model_to_search,
+                model: DocAttach,
                 required: true,
-                include: [
-                  {
-                    attributes: [
-                      'id',
-                      'obj_id',
-                      'r_id',
-                      'name',
-                      'filename',
-                      'filebody',
-                      'FILE_SERVER_NAME',
-                      'REL_SERVER_PATH',
-                    ],
-                    model: DocAttach,
-                    required: true,
-                    where: {
-                      name: {
-                        [Op.like]: `${do_type_name}%`,
-                      },
-                    },
-                  },
+                attributes: [
+                  'id',
+                  'obj_id',
+                  'r_id',
+                  'name',
+                  'filename',
+                  'FILE_SERVER_NAME',
+                  'REL_SERVER_PATH',
                 ],
+                where: {
+                  name: {
+                    [Op.like]: `${do_type_name}%`,
+                  },
+                },
               },
             ],
           },
         ],
       });
+
+      const debts_obj = debts.rows.map((item) => {
+        const lawItems = item[model_to_search.name];
+
+        const docAttachs = lawItems.flatMap(
+          (lawItem) =>
+            lawItem.DocAttachs?.map((doc) => ({
+              id: doc.id,
+              obj_id: doc.obj_id,
+              r_id: doc.r_id,
+              name: doc.name,
+              filename: doc.filename,
+              FILE_SERVER_NAME: doc.FILE_SERVER_NAME,
+              REL_SERVER_PATH: doc.REL_SERVER_PATH,
+            })) || [],
+        );
+
+        return {
+          debt_id: item.id as number,
+          doc_attachs: docAttachs, // Добавляем вложенные документы
+        };
+      });
+      return {
+        name: portfolio.name,
+        type: do_type_name,
+        debts_count: debts.count,
+        debts: debts_obj,
+      };
     } catch (error) {
       throw new Error(error);
     }

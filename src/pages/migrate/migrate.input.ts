@@ -10,7 +10,7 @@ export class MigrateInput {
     description: 'id портфеля',
     default: 0,
   })
-  portfolio_id: number;
+  r_portfolio_id: number;
   @ApiProperty({
     description: 'Тип вложения: 1 - судебная работа, 2 - испол. пр-во',
     default: 1,
