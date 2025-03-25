@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import DO_Types from 'src/modules/database/sqlite/sqlite.models/do_types.model';
 import { MigrateInput } from './migrate.input';
 import { Op } from 'sequelize';
+import { node } from 'src/main';
 
 @Injectable()
 export default class MigrateService {
@@ -33,7 +34,7 @@ export default class MigrateService {
       const model_to_search = obj[include_type];
 
       return await this.modelPortfolio.findOne({
-        logging: console.log,
+        logging: node === 'dev' ? console.log : false,
         attributes: ['id', 'name'],
         where: {
           id: portfolio_id,
