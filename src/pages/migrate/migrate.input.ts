@@ -1,4 +1,19 @@
-export class MigrateClass {
-  do_type_id: number;
+import { ApiProperty } from '@nestjs/swagger';
+
+export class MigrateInput {
+  @ApiProperty({
+    description: 'Тип документа',
+    default: '',
+  })
+  do_type_name: string;
+  @ApiProperty({
+    description: 'id портфеля',
+    default: 0,
+  })
   portfolio_id: number;
+  @ApiProperty({
+    description: 'Тип вложения: 1 - судебная работа, 2 - испол. пр-во',
+    default: 1,
+  })
+  include_type: 1 | 2;
 }
