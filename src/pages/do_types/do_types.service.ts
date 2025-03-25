@@ -19,6 +19,7 @@ export default class DO_TypesService {
 
   async readDoTypes({ name }: DoTypesInput) {
     return await this.modelDoType.findAll({
+      attributes: ['id', 'name'],
       where: {
         name: {
           [Op.like]: `%${name}%`,

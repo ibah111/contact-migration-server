@@ -1,5 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class DoTypesInput {
   @ApiPropertyOptional()
@@ -9,4 +8,11 @@ export class DoTypesInput {
     default: '',
   })
   name?: string;
+}
+
+export class NameInput {
+  @ApiPropertyOptional({
+    default: '',
+  })
+  name: string;
 }

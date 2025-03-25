@@ -1,13 +1,5 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
-import { DoTypesInput } from './do_types.input';
+import { Body, Controller, Delete, Post, Put } from '@nestjs/common';
+import { DoTypesInput, NameInput } from './do_types.input';
 import DO_TypesService from './do_types.service';
 
 @Controller('dotypes')
@@ -21,8 +13,8 @@ export default class DO_TypesController {
     });
   }
 
-  @Get('read')
-  async readDoTypes(@Query('name') name: string) {
+  @Post('read')
+  async readDoTypes(@Body() { name }: NameInput) {
     return this.service.readDoTypes({
       name,
     });
