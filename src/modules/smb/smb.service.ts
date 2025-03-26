@@ -40,7 +40,6 @@ export default class SmbService {
 
   async exists(path: string) {
     const exists_path = `Docattach${path}`;
-    console.log(exists_path.yellow);
     return new Promise((resolve, reject) => {
       this.smb.exists(exists_path, (err: any, exists: any) => {
         if (err) {
