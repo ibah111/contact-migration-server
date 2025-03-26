@@ -39,30 +39,82 @@ export default class SmbService {
   }
 
   async exists(path: string) {
+    const exists_path = `Docattach${path}`;
+    console.log(exists_path.yellow);
     return new Promise((resolve, reject) => {
-      this.smb.exists(path, (err: any, exists: any) => {
-        if (err) reject(err);
-        resolve(exists);
+      this.smb.exists(exists_path, (err: any, exists: any) => {
+        if (err) {
+          reject(err);
+          this.smb.disconnect();
+        }
+        if (exists) {
+          console.log(
+            'exists_path'.yellow,
+            exists_path,
+            exists === true ? 'resolved'.green : 'not exists'.red,
+          );
+          resolve(exists);
+          this.smb.disconnect();
+        }
       });
     });
   }
 
   async readdir(path: string) {
+    const readdir_path = `Docattach${path}`;
     return new Promise((resolve, reject) => {
-      this.smb.readdir(`Docattach\\${path}`, (err: any, files: string[]) => {
+      this.smb.readdir(readdir_path, (err: any, files: string[]) => {
         if (err) reject(err);
         resolve(files);
+        this.smb.disconnect();
       });
     });
   }
 
   async readFile(path: string) {
-    return new Promise<void>((resolve, reject) => {
-      this.smb.readFile(path, (err, data) => {
+    const readFile_path = `Docattach${path}`;
+    const extension = path.split('.').pop()?.toLowerCase() || '';
+    return new Promise((resolve, reject) => {
+      this.smb.readFile(readFile_path, (err, data) => {
         if (err) reject(err);
-        console.log(data);
-        resolve(data);
+        const result = this.processFileData(data, extension);
+        console.log('readFile result: ', result);
+        resolve(result);
+        this.smb.disconnect();
       });
     });
+  }
+
+  private processFileData(
+    data: Buffer,
+    extension: string,
+  ): { data: Buffer | string; mimeType: string } {
+    const mimeTypes: Record<string, string> = {
+      txt: 'text/plain',
+      pdf: 'application/pdf',
+      png: 'image/png',
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      doc: 'application/msword',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      xls: 'application/vnd.ms-excel',
+      xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    };
+
+    const mimeType = mimeTypes[extension] || 'application/octet-stream';
+
+    // Для текстовых файлов возвращаем строку
+    if (mimeType.startsWith('text/') || ['pdf'].includes(extension)) {
+      return {
+        data: data.toString('utf-8'),
+        mimeType,
+      };
+    }
+
+    // Для бинарных файлов возвращаем Buffer
+    return {
+      data,
+      mimeType,
+    };
   }
 }
