@@ -116,23 +116,29 @@ export default class MigrateService {
           path: `${item.REL_SERVER_PATH.replace(/\\/g, '\\\\') + item.FILE_SERVER_NAME}`,
         })),
       );
-      const files = debts_obj[1].doc_attachs;
-      for (const { REL_SERVER_PATH, FILE_SERVER_NAME } of files) {
-        try {
-          const path = `${REL_SERVER_PATH.replace(/\\/g, '\\\\')}${FILE_SERVER_NAME}`;
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          const exists = await this.smb_service.exists(path);
-          results.push({ path, exists });
-          console.log(`Checked: ${path} - ${exists ? 'Exists' : 'Not found'}`);
-        } catch (error) {
-          console.error(
-            `Error checking file ${FILE_SERVER_NAME}:`,
-            error.message,
-          );
-          results.push({
-            path: `${REL_SERVER_PATH}${FILE_SERVER_NAME}`,
-            error: error.message,
-          });
+      let checked: number = 0;
+      const files_length = doc_attachs_objs.flat().length;
+      for (const { doc_attachs } of debts_obj) {
+        const files = doc_attachs;
+
+        for (const { REL_SERVER_PATH, FILE_SERVER_NAME } of files) {
+          try {
+            const path = `${REL_SERVER_PATH.replace(/\\/g, '\\\\')}${FILE_SERVER_NAME}`;
+            await new Promise((resolve) => setTimeout(resolve, 10)); // <-- timeout
+            const exists = await this.smb_service.exists(path);
+            results.push({ path, exists });
+            checked++;
+            console.log(checked, '/', files_length);
+          } catch (error) {
+            console.error(
+              `Error checking file ${FILE_SERVER_NAME}:`,
+              error.message,
+            );
+            results.push({
+              path: `${REL_SERVER_PATH}${FILE_SERVER_NAME}`,
+              error: error.message,
+            });
+          }
         }
       }
 
@@ -141,7 +147,7 @@ export default class MigrateService {
         type: do_type_name,
         model_to_search: model_to_search.name,
         debts_count: debts.length,
-        doc_attachs_length: doc_attachs_objs.flat().length,
+        doc_attachs_length: files_length,
         results,
         doc_attachs_objs,
       };
