@@ -6,6 +6,7 @@ import { MigrateInput } from './migrate.input';
 import { Op } from 'sequelize';
 import { node } from 'src/main';
 import SmbService from 'src/modules/smb/smb.service';
+import FTPService from 'src/modules/ftp/ftp.service';
 
 @Injectable()
 export default class MigrateService {
@@ -19,7 +20,16 @@ export default class MigrateService {
     @InjectModel(DO_Types, 'sqlite')
     private readonly modelDoTypes: typeof DO_Types,
     private readonly smb_service: SmbService,
+    private readonly ftp_service: FTPService,
   ) {}
+
+  today(date = new Date()) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}.${month}.${year}`;
+  }
 
   async migrate({ r_portfolio_id, do_type_name, include_type }: MigrateInput) {
     console.log(
@@ -118,6 +128,17 @@ export default class MigrateService {
       );
       let checked: number = 0;
       const files_length = doc_attachs_objs.flat().length;
+      const date = this.today();
+      const folder_name = `Цессия ${portfolio.name} Тип ${do_type_name} от ${date} (${files_length} шт)`;
+      await this.ftp_service
+        .connect()
+        .then(async () => {
+          await this.ftp_service.mkDir({
+            path: folder_name,
+          });
+        })
+        .finally(async () => await this.ftp_service.close());
+
       for (const { doc_attachs } of debts_obj) {
         const files = doc_attachs;
 
@@ -126,6 +147,11 @@ export default class MigrateService {
             const path = `${REL_SERVER_PATH.replace(/\\/g, '\\\\')}${FILE_SERVER_NAME}`;
             await new Promise((resolve) => setTimeout(resolve, 10)); // <-- timeout
             const exists = await this.smb_service.exists(path);
+
+            // if exists then upload
+            if (exists) {
+              //const readed = await this.smb_service.readFile(path)
+            }
             results.push({ path, exists });
             checked++;
             console.log(checked, '/', files_length);
@@ -147,7 +173,7 @@ export default class MigrateService {
         type: do_type_name,
         model_to_search: model_to_search.name,
         debts_count: debts.length,
-        doc_attachs_length: files_length,
+        checked_result: `${checked} // ${files_length}`,
         results,
         doc_attachs_objs,
       };
