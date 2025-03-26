@@ -5,6 +5,7 @@ import DO_Types from 'src/modules/database/sqlite/sqlite.models/do_types.model';
 import { MigrateInput } from './migrate.input';
 import { Op } from 'sequelize';
 import { node } from 'src/main';
+import SmbService from 'src/modules/smb/smb.service';
 
 @Injectable()
 export default class MigrateService {
@@ -17,6 +18,7 @@ export default class MigrateService {
     private readonly modelDocAttach: typeof DocAttach,
     @InjectModel(DO_Types, 'sqlite')
     private readonly modelDoTypes: typeof DO_Types,
+    private readonly smb_service: SmbService,
   ) {}
 
   async migrate({ r_portfolio_id, do_type_name, include_type }: MigrateInput) {
@@ -31,14 +33,6 @@ export default class MigrateService {
       include_type,
       '\n',
     );
-    // const type = await this.modelDoTypes.findOne({
-    //   where: {
-    //         name: {
-    //         [Op.like]: `%${}%`
-    //     },
-    //   },
-    //   rejectOnEmpty: new Error(`Тип с id: "${do_type_id}" не найден в списке.`),
-    // });
     try {
       const obj = {
         1: {
@@ -60,7 +54,7 @@ export default class MigrateService {
           id: r_portfolio_id,
         },
       });
-      const debts = await this.modelDebt.findAndCountAll({
+      const debts = await this.modelDebt.findAll({
         where: {
           r_portfolio_id,
         },
@@ -92,8 +86,7 @@ export default class MigrateService {
           },
         ],
       });
-
-      const debts_obj = debts.rows.map((item) => {
+      const debts_obj = debts.map((item) => {
         const lawItems = item[model_to_search.name];
 
         const docAttachs = lawItems.flatMap(
@@ -111,14 +104,46 @@ export default class MigrateService {
 
         return {
           debt_id: item.id as number,
-          doc_attachs: docAttachs, // Добавляем вложенные документы
+          doc_attachs: docAttachs,
         };
       });
+      const results = [] as any[];
+      const doc_attachs_objs = debts_obj.map((item) =>
+        item.doc_attachs.map((item) => ({
+          id: item.id,
+          FILE_SERVER_NAME: item.FILE_SERVER_NAME,
+          REL_SERVER_PATH: item.REL_SERVER_PATH,
+          path: `${item.REL_SERVER_PATH.replace(/\\/g, '\\\\') + item.FILE_SERVER_NAME}`,
+        })),
+      );
+      const files = debts_obj[1].doc_attachs;
+      for (const { REL_SERVER_PATH, FILE_SERVER_NAME } of files) {
+        try {
+          const path = `${REL_SERVER_PATH.replace(/\\/g, '\\\\')}${FILE_SERVER_NAME}`;
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          const exists = await this.smb_service.exists(path);
+          results.push({ path, exists });
+          console.log(`Checked: ${path} - ${exists ? 'Exists' : 'Not found'}`);
+        } catch (error) {
+          console.error(
+            `Error checking file ${FILE_SERVER_NAME}:`,
+            error.message,
+          );
+          results.push({
+            path: `${REL_SERVER_PATH}${FILE_SERVER_NAME}`,
+            error: error.message,
+          });
+        }
+      }
+
       return {
         name: portfolio.name,
         type: do_type_name,
-        debts_count: debts.count,
-        debts: debts_obj,
+        model_to_search: model_to_search.name,
+        debts_count: debts.length,
+        doc_attachs_length: doc_attachs_objs.flat().length,
+        results,
+        doc_attachs_objs,
       };
     } catch (error) {
       throw new Error(error);
