@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { node } from 'src/main';
-const SMB2 = require('smb2');
+const SMB2 = require('@marsaud/smb2');
 
 @Injectable()
 export default class SmbService {
