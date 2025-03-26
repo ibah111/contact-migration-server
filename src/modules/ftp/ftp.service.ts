@@ -71,7 +71,13 @@ export default class FTPService {
 
   async mkDir({ path }: FtpInput) {
     try {
-      await this.client.ensureDir(path);
+      const folder_name = path
+        .replace(/[:",<>*?|]/g, '') // Удаляем запрещённые символы
+        .replace(/\s+/g, '_') // Заменяем пробелы на подчёркивания
+        .substring(0, 150); // Ограничиваем длину
+      console.log(folder_name);
+      await this.client.ensureDir(`/${folder_name}/`);
+      console.log('directory on ftp been created');
     } catch (error) {
       console.log('ensureDir error');
       throw Error(error);
