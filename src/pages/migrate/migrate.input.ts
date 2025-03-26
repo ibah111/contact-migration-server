@@ -16,4 +16,8 @@ export class MigrateInput {
     default: 1,
   })
   include_type: 1 | 2;
+  @ApiProperty({
+    default: false,
+  })
+  upload: boolean;
 }
