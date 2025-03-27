@@ -143,9 +143,11 @@ export default class MigrateService {
         path: folder_name,
       });
 
-      for (const { doc_attachs } of debts_obj) {
+      for (const { doc_attachs, debt_id } of debts_obj) {
         const files = doc_attachs;
-        for (const { REL_SERVER_PATH, FILE_SERVER_NAME, filename } of files) {
+        let fileCount = 0; // Счетчик файлов для текущего debt_id
+
+        for (const { REL_SERVER_PATH, FILE_SERVER_NAME } of files) {
           try {
             const path = `${REL_SERVER_PATH.replace(/\\/g, '\\\\')}${FILE_SERVER_NAME}`;
             await new Promise((resolve) => setTimeout(resolve, 10)); // <-- timeout
@@ -162,12 +164,17 @@ export default class MigrateService {
             if (upload) {
               try {
                 const { data } = await this.smb_service.readFileBuffer(path);
-                // Используем только имя файла без пути к папке
-                const ftpPath = filename;
-                console.log('Uploading to FTP:', ftpPath);
-                await this.ftp_service.uploadFileBuffer(data, ftpPath);
-                results.push({ path, exists, status: 'uploaded', ftpPath });
-                console.log('Successfully uploaded:', ftpPath);
+                fileCount++; // Увеличиваем счетчик
+
+                // Получаем расширение файла из оригинального имени
+                const fileExtension = FILE_SERVER_NAME.split('.').pop() || '';
+                // Формируем имя файла в формате debt_id_(count).extension
+                const ftpFileName = `${debt_id}_(${fileCount}).${fileExtension}`;
+
+                console.log('Uploading to FTP:', ftpFileName);
+                await this.ftp_service.uploadFileBuffer(data, ftpFileName);
+                results.push({ path, exists, status: 'uploaded', ftpFileName });
+                console.log('Successfully uploaded:', ftpFileName);
               } catch (error) {
                 console.error(
                   `Error uploading file ${FILE_SERVER_NAME}:`.red,
