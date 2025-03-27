@@ -136,22 +136,21 @@ export default class MigrateService {
       const files_length = doc_attachs_objs.flat().length;
       const date = this.today();
       const folder_name = `Цессия ${portfolio.name} Тип ${do_type_name} от ${date} (${files_length} шт)`;
-      await this.ftp_service
-        .connect()
-        .then(async () => {
-          await this.ftp_service.mkDir({
-            path: folder_name,
-          });
-        })
-        .finally(async () => await this.ftp_service.close());
+
+      // Подключаемся к FTP и создаем директорию
+      await this.ftp_service.connect();
+      await this.ftp_service.mkDir({
+        path: folder_name,
+      });
 
       for (const { doc_attachs } of debts_obj) {
         const files = doc_attachs;
-        //TODO: исправить filename
         for (const { REL_SERVER_PATH, FILE_SERVER_NAME, filename } of files) {
           try {
             const path = `${REL_SERVER_PATH.replace(/\\/g, '\\\\')}${FILE_SERVER_NAME}`;
             await new Promise((resolve) => setTimeout(resolve, 10)); // <-- timeout
+
+            // Проверяем существование файла
             const exists = await this.smb_service.exists(path);
 
             if (!exists) {
@@ -159,17 +158,31 @@ export default class MigrateService {
               continue;
             }
 
-            // if exists then upload
+            // Если файл существует и нужно загрузить
             if (upload) {
-              const { data } = await this.smb_service.readFileBuffer(path);
-
-              //TODO: исправить filename
-              await this.ftp_service.uploadFileBuffer(
-                data,
-                `${folder_name}\\${filename}`,
-              );
+              try {
+                const { data } = await this.smb_service.readFileBuffer(path);
+                const ftpPath = `${folder_name}\\${filename}`;
+                console.log('Uploading to FTP:', ftpPath);
+                await this.ftp_service.uploadFileBuffer(data, ftpPath);
+                results.push({ path, exists, status: 'uploaded', ftpPath });
+                console.log('Successfully uploaded:', ftpPath);
+              } catch (error) {
+                console.error(
+                  `Error uploading file ${FILE_SERVER_NAME}:`.red,
+                  error.message,
+                );
+                results.push({
+                  path: `${REL_SERVER_PATH}${FILE_SERVER_NAME}`,
+                  error: error.message,
+                  status: 'upload_failed',
+                });
+                continue;
+              }
+            } else {
+              results.push({ path, exists, status: 'checked' });
             }
-            results.push({ path, exists });
+
             checked++;
             console.log(checked, '/', files_length);
           } catch (error) {
@@ -180,10 +193,15 @@ export default class MigrateService {
             results.push({
               path: `${REL_SERVER_PATH}${FILE_SERVER_NAME}`,
               error: error.message,
+              status: 'check_failed',
             });
           }
         }
       }
+
+      // Закрываем соединения после завершения всех операций
+      await this.ftp_service.close();
+      await this.smb_service.disconnect();
 
       return {
         name: portfolio.name,

@@ -45,7 +45,6 @@ export default class SmbService {
       this.smb.exists(exists_path, (err: any, exists: any) => {
         if (err) {
           reject(err);
-          this.smb.disconnect();
         }
         if (exists) {
           console.log(
@@ -54,7 +53,6 @@ export default class SmbService {
             exists === true ? 'resolved'.green : 'not exists'.red,
           );
           resolve(exists);
-          this.smb.disconnect();
         }
       });
     });
@@ -66,7 +64,6 @@ export default class SmbService {
       this.smb.readdir(readdir_path, (err: any, files: string[]) => {
         if (err) reject(err);
         resolve(files);
-        this.smb.disconnect();
       });
     });
   }
@@ -96,8 +93,6 @@ export default class SmbService {
           resolve(result);
         } catch (error) {
           reject(error);
-        } finally {
-          this.smb.disconnect();
         }
       });
     });
@@ -113,6 +108,7 @@ export default class SmbService {
     };
     return mimeTypes[extension] || 'application/octet-stream';
   }
+
   async readFileBuffer(
     path: string,
   ): Promise<{ data: Buffer; mimeType: string }> {
@@ -136,8 +132,6 @@ export default class SmbService {
           resolve({ data: Buffer.from(data), mimeType });
         } catch (error) {
           reject(error);
-        } finally {
-          this.smb.disconnect();
         }
       });
     });
@@ -176,5 +170,12 @@ export default class SmbService {
       data,
       mimeType,
     };
+  }
+
+  async disconnect() {
+    if (this.smb) {
+      this.smb.disconnect();
+      console.log('SMB Connection closed');
+    }
   }
 }
