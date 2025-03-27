@@ -3,12 +3,12 @@ import { ApiProperty } from '@nestjs/swagger';
 export class MigrateInput {
   @ApiProperty({
     description: 'Тип документа',
-    default: '',
+    default: 'запрос',
   })
   do_type_name: string;
   @ApiProperty({
     description: 'id портфеля',
-    default: 0,
+    default: 88,
   })
   r_portfolio_id: number;
   @ApiProperty({
@@ -17,7 +17,7 @@ export class MigrateInput {
   })
   include_type: 1 | 2;
   @ApiProperty({
-    default: false,
+    default: true,
   })
   upload: boolean;
 }
