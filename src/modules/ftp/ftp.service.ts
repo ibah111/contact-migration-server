@@ -48,6 +48,20 @@ export default class FTPService {
     }
   }
 
+  async uploadFileBuffer(data: Buffer, remotePath: string): Promise<void> {
+    try {
+      await this.connect();
+      const stream = Readable.from(data);
+      await this.client.uploadFrom(stream, remotePath);
+      console.log('File uploaded successfully:', remotePath);
+    } catch (error) {
+      console.error(`FTP Upload Error for ${remotePath}:`, error);
+      throw error;
+    } finally {
+      await this.close();
+    }
+  }
+
   async downloadFile(remoteFilePath: string, localFilePath: string) {
     try {
       await this.client.downloadTo(localFilePath, remoteFilePath);

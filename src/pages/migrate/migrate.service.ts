@@ -7,6 +7,7 @@ import { Op } from 'sequelize';
 import { node } from 'src/main';
 import SmbService from 'src/modules/smb/smb.service';
 import FTPService from 'src/modules/ftp/ftp.service';
+import { Readable } from 'stream';
 
 @Injectable()
 export default class MigrateService {
@@ -31,7 +32,12 @@ export default class MigrateService {
     return `${day}.${month}.${year}`;
   }
 
-  async migrate({ r_portfolio_id, do_type_name, include_type }: MigrateInput) {
+  async migrate({
+    r_portfolio_id,
+    do_type_name,
+    include_type,
+    upload,
+  }: MigrateInput) {
     console.log(
       'r_portfolio_id:',
       r_portfolio_id,
@@ -141,23 +147,34 @@ export default class MigrateService {
 
       for (const { doc_attachs } of debts_obj) {
         const files = doc_attachs;
-
-        for (const { REL_SERVER_PATH, FILE_SERVER_NAME } of files) {
+        //TODO: исправить filename
+        for (const { REL_SERVER_PATH, FILE_SERVER_NAME, filename } of files) {
           try {
             const path = `${REL_SERVER_PATH.replace(/\\/g, '\\\\')}${FILE_SERVER_NAME}`;
             await new Promise((resolve) => setTimeout(resolve, 10)); // <-- timeout
             const exists = await this.smb_service.exists(path);
 
+            if (!exists) {
+              results.push({ path, status: 'not_found' });
+              continue;
+            }
+
             // if exists then upload
-            if (exists) {
-              //const readed = await this.smb_service.readFile(path)
+            if (upload) {
+              const { data } = await this.smb_service.readFileBuffer(path);
+
+              //TODO: исправить filename
+              await this.ftp_service.uploadFileBuffer(
+                data,
+                `${folder_name}\\${filename}`,
+              );
             }
             results.push({ path, exists });
             checked++;
             console.log(checked, '/', files_length);
           } catch (error) {
             console.error(
-              `Error checking file ${FILE_SERVER_NAME}:`,
+              `Error checking file ${FILE_SERVER_NAME}:`.red,
               error.message,
             );
             results.push({
