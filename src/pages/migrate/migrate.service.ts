@@ -162,7 +162,8 @@ export default class MigrateService {
             if (upload) {
               try {
                 const { data } = await this.smb_service.readFileBuffer(path);
-                const ftpPath = `${folder_name}\\${filename}`;
+                // Используем только имя файла без пути к папке
+                const ftpPath = filename;
                 console.log('Uploading to FTP:', ftpPath);
                 await this.ftp_service.uploadFileBuffer(data, ftpPath);
                 results.push({ path, exists, status: 'uploaded', ftpPath });
