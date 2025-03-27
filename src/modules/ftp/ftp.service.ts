@@ -9,6 +9,7 @@ import { Readable } from 'stream';
 export default class FTPService {
   private client: ftp.Client;
   private ftpProps: FtpProps;
+  private currentDir: string = '/';
 
   constructor(private readonly config: ConfigService) {
     this.client = new ftp.Client();
@@ -51,8 +52,10 @@ export default class FTPService {
   async uploadFileBuffer(data: Buffer, remotePath: string): Promise<void> {
     try {
       const stream = Readable.from(data);
-      await this.client.uploadFrom(stream, remotePath);
-      console.log('File uploaded successfully:', remotePath);
+      const fullPath = `${this.currentDir}${remotePath}`;
+      console.log('Uploading to FTP path:', fullPath);
+      await this.client.uploadFrom(stream, fullPath);
+      console.log('File uploaded successfully:', fullPath);
     } catch (error) {
       console.error(`FTP Upload Error for ${remotePath}:`, error);
       throw error;
@@ -86,12 +89,24 @@ export default class FTPService {
         .replace(/[:",<>*?|]/g, '') // Удаляем запрещённые символы
         .replace(/\s+/g, '_') // Заменяем пробелы на подчёркивания
         .substring(0, 150); // Ограничиваем длину
-      console.log(folder_name);
+      console.log('Creating directory:', folder_name);
       await this.client.ensureDir(`/${folder_name}/`);
-      console.log('directory on ftp been created');
+      this.currentDir = `/${folder_name}/`;
+      console.log('Directory created and set as current');
     } catch (error) {
       console.log('ensureDir error');
       throw Error(error);
+    }
+  }
+
+  async setCurrentDir(dir: string) {
+    try {
+      this.currentDir = dir;
+      await this.client.cd(dir);
+      console.log('Changed FTP directory to:', dir);
+    } catch (error) {
+      console.error('Error changing FTP directory:', error);
+      throw error;
     }
   }
 
