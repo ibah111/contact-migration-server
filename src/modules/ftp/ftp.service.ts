@@ -13,7 +13,7 @@ export default class FTPService {
 
   constructor(private readonly config: ConfigService) {
     this.client = new ftp.Client();
-    this.client.ftp.verbose = true; // Логирование (можно отключить)
+    this.client.ftp.verbose = false; // Логирование (можно отключить)
     this.ftpProps = {
       host: config.get<string>('ftp_host')!,
       user: config.get<string>('ftp_login')!,
@@ -49,15 +49,15 @@ export default class FTPService {
     }
   }
 
-  async uploadFileBuffer(data: Buffer, remotePath: string): Promise<void> {
+  async uploadFileBuffer(data: Buffer, fullPath: string): Promise<void> {
     try {
       const stream = Readable.from(data);
-      const fullPath = `${this.currentDir}${remotePath}`;
+      // const fullPath = `${this.currentDir}${remotePath}`;
       console.log('Uploading to FTP path:', fullPath);
       await this.client.uploadFrom(stream, fullPath);
-      console.log('File uploaded successfully:', fullPath);
+      console.log('File uploaded successfully:'.green, fullPath);
     } catch (error) {
-      console.error(`FTP Upload Error for ${remotePath}:`, error);
+      console.error(`FTP Upload Error for ${fullPath}:`, error);
       throw error;
     }
   }
@@ -81,6 +81,13 @@ export default class FTPService {
       console.error('FTP List Error:'.red, error);
       throw error;
     }
+  }
+
+  fixPath(path: string): string {
+    return path
+      .replace(/[:",<>*?|]/g, '') // Удаляем запрещённые символы
+      .replace(/\s+/g, '_') // Заменяем пробелы на подчёркивания
+      .substring(0, 150); // Ограничиваем длину
   }
 
   async mkDir({ path }: FtpInput) {

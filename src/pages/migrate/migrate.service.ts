@@ -157,6 +157,7 @@ export default class MigrateService {
           path: `${base_folder_name}_(${index + 1})`,
         });
       }
+      this.ftp_service.setCurrentDir('/');
       for (const { doc_attachs, debt_id } of debts_obj) {
         const files = doc_attachs;
         let fileCount = 0; // Счетчик файлов для текущего debt_id
@@ -185,12 +186,15 @@ export default class MigrateService {
                 // Формируем имя файла в формате debt_id_(count).extension
                 const ftpFileName = `${debt_id}.${fileExtension}`;
 
-                const uploaded_folder = `${base_folder_name}_(${fileCount})`;
+                const uploaded_folder = this.ftp_service.fixPath(
+                  `${base_folder_name}_(${fileCount})`,
+                );
+
                 const full_path = `${uploaded_folder}/${ftpFileName}`;
-                console.log('Uploading to FTP:', ftpFileName);
-                await this.ftp_service.uploadFileBuffer(data, ftpFileName);
-                results.push({ path, exists, status: 'uploaded', ftpFileName });
-                console.log('Successfully uploaded:', ftpFileName);
+                console.log('full_path:'.yellow, full_path);
+                await this.ftp_service.uploadFileBuffer(data, full_path);
+                results.push({ path, exists, status: 'uploaded', full_path });
+                console.log('Successfully uploaded:'.green, full_path);
               } catch (error) {
                 console.error(
                   `Error uploading file ${FILE_SERVER_NAME}:`.red,
