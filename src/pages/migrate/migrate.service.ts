@@ -123,6 +123,19 @@ export default class MigrateService {
           doc_attachs: docAttachs,
         };
       });
+
+      // Находим долг с максимальным количеством вложенных документов
+      const max_doc_debt = debts_obj.reduce((max, current) => {
+        return current.doc_attachs.length > max.doc_attachs.length
+          ? current
+          : max;
+      });
+      const folder_count = max_doc_debt.doc_attachs.length;
+      console.log('Долг с максимальным количеством документов:', {
+        debt_id: max_doc_debt.debt_id,
+        doc_count: max_doc_debt.doc_attachs.length,
+      });
+
       const results = [] as any[];
       const doc_attachs_objs = debts_obj.map((item) =>
         item.doc_attachs.map((item) => ({
@@ -135,14 +148,15 @@ export default class MigrateService {
       let checked: number = 0;
       const files_length = doc_attachs_objs.flat().length;
       const date = this.today();
-      const folder_name = `Цессия ${portfolio.name} Тип ${do_type_name} от ${date} (${files_length} шт)`;
+      const base_folder_name = `Цессия ${portfolio.name} Тип ${do_type_name} от ${date}`;
 
       // Подключаемся к FTP и создаем директорию
       await this.ftp_service.connect();
-      await this.ftp_service.mkDir({
-        path: folder_name,
-      });
-
+      for (let index = 0; index < folder_count; index++) {
+        await this.ftp_service.mkDir({
+          path: `${base_folder_name}_(${index + 1})`,
+        });
+      }
       for (const { doc_attachs, debt_id } of debts_obj) {
         const files = doc_attachs;
         let fileCount = 0; // Счетчик файлов для текущего debt_id
@@ -169,8 +183,10 @@ export default class MigrateService {
                 // Получаем расширение файла из оригинального имени
                 const fileExtension = FILE_SERVER_NAME.split('.').pop() || '';
                 // Формируем имя файла в формате debt_id_(count).extension
-                const ftpFileName = `${debt_id}_(${fileCount}).${fileExtension}`;
+                const ftpFileName = `${debt_id}.${fileExtension}`;
 
+                const uploaded_folder = `${base_folder_name}_(${fileCount})`;
+                const full_path = `${uploaded_folder}/${ftpFileName}`;
                 console.log('Uploading to FTP:', ftpFileName);
                 await this.ftp_service.uploadFileBuffer(data, ftpFileName);
                 results.push({ path, exists, status: 'uploaded', ftpFileName });
@@ -216,6 +232,7 @@ export default class MigrateService {
         type: do_type_name,
         model_to_search: model_to_search.name,
         debts_count: debts.length,
+        folder_count,
         checked_result: `${checked} // ${files_length}`,
         results,
         doc_attachs_objs,
