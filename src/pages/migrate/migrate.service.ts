@@ -149,15 +149,16 @@ export default class MigrateService {
       const files_length = doc_attachs_objs.flat().length;
       const date = this.today();
       const base_folder_name = `Цессия ${portfolio.name} Тип ${do_type_name} от ${date}`;
-
-      // Подключаемся к FTP и создаем директорию
-      await this.ftp_service.connect();
-      for (let index = 0; index < folder_count; index++) {
-        await this.ftp_service.mkDir({
-          path: `${base_folder_name}_(${index + 1})`,
-        });
+      if (upload) {
+        // Подключаемся к FTP и создаем директорию
+        await this.ftp_service.connect();
+        for (let index = 0; index < folder_count; index++) {
+          await this.ftp_service.mkDir({
+            path: `${base_folder_name}_(${index + 1})`,
+          });
+        }
+        this.ftp_service.setCurrentDir('/');
       }
-      this.ftp_service.setCurrentDir('/');
       for (const { doc_attachs, debt_id } of debts_obj) {
         const files = doc_attachs;
         let fileCount = 0; // Счетчик файлов для текущего debt_id
@@ -165,50 +166,90 @@ export default class MigrateService {
         for (const { REL_SERVER_PATH, FILE_SERVER_NAME } of files) {
           try {
             const path = `${REL_SERVER_PATH.replace(/\\/g, '\\\\')}${FILE_SERVER_NAME}`;
-            await new Promise((resolve) => setTimeout(resolve, 10)); // <-- timeout
+            console.log('Processing file:', {
+              path,
+              currentCount: checked + 1,
+              totalFiles: files_length,
+            });
 
-            // Проверяем существование файла
-            const exists = await this.smb_service.exists(path);
+            try {
+              // Создаем промис с таймаутом для проверки файла
+              const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => {
+                  reject(new Error('File check timeout'));
+                }, 3000); // 3 секунды таймаут
+              });
 
-            if (!exists) {
-              results.push({ path, status: 'not_found' });
-              continue;
-            }
+              // Создаем промис для проверки файла
+              const checkPromise = this.smb_service.exists(path);
 
-            // Если файл существует и нужно загрузить
-            if (upload) {
-              try {
-                const { data } = await this.smb_service.readFileBuffer(path);
-                fileCount++; // Увеличиваем счетчик
+              // Ждем либо результата проверки, либо таймаута
+              const exists = await Promise.race([checkPromise, timeoutPromise]);
+              console.log('File exists check result:', { path, exists });
 
-                // Получаем расширение файла из оригинального имени
-                const fileExtension = FILE_SERVER_NAME.split('.').pop() || '';
-                // Формируем имя файла в формате debt_id_(count).extension
-                const ftpFileName = `${debt_id}.${fileExtension}`;
+              if (!exists) {
+                results.push({ path, status: 'not_found' });
+                checked++;
+                continue;
+              }
 
-                const uploaded_folder = this.ftp_service.fixPath(
-                  `${base_folder_name}_(${fileCount})`,
+              // Если файл существует и нужно загрузить
+              if (upload) {
+                try {
+                  console.log('Reading file buffer:', path);
+                  const { data } = await this.smb_service.readFileBuffer(path);
+                  console.log('File buffer read successfully:', path);
+                  fileCount++; // Увеличиваем счетчик
+
+                  // Получаем расширение файла из оригинального имени
+                  const fileExtension = FILE_SERVER_NAME.split('.').pop() || '';
+                  // Формируем имя файла в формате debt_id.extension
+                  const ftpFileName = `${debt_id}.${fileExtension}`;
+
+                  const uploaded_folder = this.ftp_service.fixPath(
+                    `${base_folder_name}_(${fileCount})`,
+                  );
+
+                  const full_path = `${uploaded_folder}/${ftpFileName}`;
+                  console.log('Starting FTP upload:', {
+                    sourcePath: path,
+                    ftpPath: full_path,
+                  });
+                  await this.ftp_service.uploadFileBuffer(data, full_path);
+                  results.push({ path, exists, status: 'uploaded', full_path });
+                  console.log('Successfully uploaded:', full_path);
+                } catch (error) {
+                  console.error(
+                    `Error uploading file ${FILE_SERVER_NAME}:`.red,
+                    error.message,
+                  );
+                  results.push({
+                    path: `${REL_SERVER_PATH}${FILE_SERVER_NAME}`,
+                    error: error.message,
+                    status: 'upload_failed',
+                  });
+                  continue;
+                }
+              } else {
+                results.push({ path, exists, status: 'checked' });
+              }
+            } catch (error) {
+              if (error.message === 'File check timeout') {
+                console.warn(
+                  `Timeout while checking file ${path}, skipping...`,
                 );
-
-                const full_path = `${uploaded_folder}/${ftpFileName}`;
-                console.log('full_path:'.yellow, full_path);
-                await this.ftp_service.uploadFileBuffer(data, full_path);
-                results.push({ path, exists, status: 'uploaded', full_path });
-                console.log('Successfully uploaded:'.green, full_path);
-              } catch (error) {
+                results.push({ path, status: 'check_timeout' });
+              } else {
                 console.error(
-                  `Error uploading file ${FILE_SERVER_NAME}:`.red,
+                  `Error checking file ${FILE_SERVER_NAME}:`.red,
                   error.message,
                 );
                 results.push({
                   path: `${REL_SERVER_PATH}${FILE_SERVER_NAME}`,
                   error: error.message,
-                  status: 'upload_failed',
+                  status: 'check_failed',
                 });
-                continue;
               }
-            } else {
-              results.push({ path, exists, status: 'checked' });
             }
 
             checked++;
