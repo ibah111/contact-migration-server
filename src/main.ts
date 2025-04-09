@@ -8,6 +8,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getSwaggerOptions, getSwaggerOptionsCustom } from './utils/swagger';
 import AppModule from './app.module';
 import multipart from '@fastify/multipart';
+import https from './utils/https';
 
 // For definition of application mode
 /**
@@ -22,10 +23,7 @@ class bootstrapOptions {
     this.adapter =
       node === 'prod'
         ? new FastifyAdapter({
-            https: {
-              //if needed import here https: https()!,
-              key: '',
-            },
+            https: https()!,
           })
         : new FastifyAdapter();
   }
