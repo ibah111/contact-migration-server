@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export default class PathInput {
-  @ApiProperty()
+  @ApiProperty({
+    description: '<<Like>> поиск по портфелям',
+    default: '',
+  })
   portfolio_name: string;
 }

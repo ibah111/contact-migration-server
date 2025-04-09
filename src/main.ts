@@ -8,6 +8,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getSwaggerOptions, getSwaggerOptionsCustom } from './utils/swagger';
 import AppModule from './app.module';
 import multipart from '@fastify/multipart';
+import cors from '@fastify/cors';
 import https from './utils/https';
 
 // For definition of application mode
@@ -37,7 +38,21 @@ async function bootstrap() {
     AppModule,
     options.adapter,
   );
+
+  // Регистрируем плагины Fastify
   app.register(multipart);
+
+  // Добавляем поддержку CORS
+  app.register(cors, {
+    origin:
+      node === 'dev'
+        ? ['http://localhost:5173', 'http://127.0.0.1:5173'] // В режиме разработки
+        : true, // В production разрешаем запросы со всех доменов (можно ограничить конкретным доменом)
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+  });
+
   const config = new DocumentBuilder().setTitle('').setVersion('').build();
   const document = SwaggerModule.createDocument(
     app,
@@ -46,6 +61,7 @@ async function bootstrap() {
   );
   SwaggerModule.setup('docs', app, document, getSwaggerOptionsCustom());
   await app.listen(process.env.PORT ?? 4070, '0.0.0.0');
+  console.log('Node:'.yellow, node);
   console.log(
     'Server running on',
     `${await app.getUrl()}/docs`.replace(

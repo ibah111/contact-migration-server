@@ -48,6 +48,7 @@ export default class PathService {
       'REL_SERVER_PATH',
     ];
     return await this.modelPortfolio.findOne({
+      limit: 20,
       where: {
         id,
       },
