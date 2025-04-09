@@ -47,7 +47,7 @@ async function bootstrap() {
     getSwaggerOptions(),
   );
   SwaggerModule.setup('docs', app, document, getSwaggerOptionsCustom());
-  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
+  await app.listen(process.env.PORT ?? 4070, '0.0.0.0');
   console.log(
     'Server running on',
     `${await app.getUrl()}/docs`.replace(
