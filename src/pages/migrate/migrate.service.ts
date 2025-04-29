@@ -8,6 +8,7 @@ import { node } from 'src/main';
 import SmbService from 'src/modules/smb/smb.service';
 import FTPService from 'src/modules/ftp/ftp.service';
 import { Readable } from 'stream';
+import Uploaded from 'src/modules/database/sqlite/sqlite.models/uploaded.model';
 
 @Injectable()
 export default class MigrateService {
@@ -20,6 +21,8 @@ export default class MigrateService {
     private readonly modelDocAttach: typeof DocAttach,
     @InjectModel(DO_Types, 'sqlite')
     private readonly modelDoTypes: typeof DO_Types,
+    @InjectModel(Uploaded, 'sqlite')
+    private readonly modelUploaded: typeof Uploaded,
     private readonly smb_service: SmbService,
     private readonly ftp_service: FTPService,
   ) {}
@@ -70,6 +73,10 @@ export default class MigrateService {
           id: r_portfolio_id,
         },
       });
+      const uploaded_files = await this.modelUploaded.findAll({
+        attributes: ['id'],
+      });
+      const uploaded_files_ids = uploaded_files.map((item) => item.id);
       const debts = await this.modelDebt.findAll({
         where: {
           r_portfolio_id,
@@ -95,6 +102,9 @@ export default class MigrateService {
                 where: {
                   name: {
                     [Op.like]: `${do_type_name}%`,
+                  },
+                  id: {
+                    [Op.notIn]: uploaded_files_ids,
                   },
                 },
               },
@@ -188,6 +198,14 @@ export default class MigrateService {
               console.log('File exists check result:', { path, exists });
 
               if (!exists) {
+                await this.modelUploaded.create({
+                  r_docattach_id: doc_attachs.id,
+                  file_name: FILE_SERVER_NAME,
+                  file_path: path,
+                  is_uploaded: false,
+                  description:
+                    'Файл не найден и не был загружен. Возможно он не сущесвует',
+                });
                 results.push({ path, status: 'not_found' });
                 checked++;
                 continue;
@@ -217,6 +235,13 @@ export default class MigrateService {
                   });
                   await this.ftp_service.uploadFileBuffer(data, full_path);
                   results.push({ path, exists, status: 'uploaded', full_path });
+                  await this.modelUploaded.create({
+                    r_docattach_id: doc_attachs.id,
+                    file_name: FILE_SERVER_NAME,
+                    file_path: path,
+                    is_uploaded: true,
+                    description: 'Файл успешно загружен',
+                  });
                   console.log('Successfully uploaded:', full_path);
                 } catch (error) {
                   console.error(

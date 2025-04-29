@@ -6,11 +6,12 @@ import MigrateController from './migrate.controller';
 import MigrateService from './migrate.service';
 import SmbModule from 'src/modules/smb/smb.module';
 import FTPModule from 'src/modules/ftp/ftp.module';
+import Uploaded from 'src/modules/database/sqlite/sqlite.models/uploaded.model';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([DocAttach, Portfolio, Debt], 'contact'),
-    SequelizeModule.forFeature([DO_Types], 'sqlite'),
+    SequelizeModule.forFeature([DO_Types, Uploaded], 'sqlite'),
     SmbModule,
     FTPModule,
   ],
