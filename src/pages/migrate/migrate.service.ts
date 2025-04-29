@@ -74,6 +74,9 @@ export default class MigrateService {
         },
       });
       const uploaded_files = await this.modelUploaded.findAll({
+        where: {
+          is_uploaded: true,
+        },
         attributes: ['id'],
       });
       const uploaded_files_ids = uploaded_files.map((item) => item.id);
@@ -210,7 +213,14 @@ export default class MigrateService {
                 checked++;
                 continue;
               }
-
+              // Создаём запись в таблице uploaded
+              const uploaded_file = this.modelUploaded.build({
+                r_docattach_id: doc_attachs.id,
+                file_name: FILE_SERVER_NAME,
+                file_path: path,
+                is_uploaded: false,
+                description: 'Файл найден',
+              });
               // Если файл существует и нужно загрузить
               if (upload) {
                 try {
@@ -235,19 +245,19 @@ export default class MigrateService {
                   });
                   await this.ftp_service.uploadFileBuffer(data, full_path);
                   results.push({ path, exists, status: 'uploaded', full_path });
-                  await this.modelUploaded.create({
-                    r_docattach_id: doc_attachs.id,
-                    file_name: FILE_SERVER_NAME,
-                    file_path: path,
-                    is_uploaded: true,
-                    description: 'Файл успешно загружен',
-                  });
+                  // Обновляем запись в таблице uploaded
+                  uploaded_file.is_uploaded = true;
+                  uploaded_file.description = 'Файл успешно загружен';
+                  await uploaded_file.save();
                   console.log('Successfully uploaded:', full_path);
                 } catch (error) {
                   console.error(
                     `Error uploading file ${FILE_SERVER_NAME}:`.red,
                     error.message,
                   );
+                  uploaded_file.is_uploaded = false;
+                  uploaded_file.description = `При загрузке файла произошла ошибка: ${error.message}`;
+                  await uploaded_file.save();
                   results.push({
                     path: `${REL_SERVER_PATH}${FILE_SERVER_NAME}`,
                     error: error.message,
@@ -257,6 +267,8 @@ export default class MigrateService {
                 }
               } else {
                 results.push({ path, exists, status: 'checked' });
+                uploaded_file.is_uploaded = true;
+                await uploaded_file.save();
               }
             } catch (error) {
               if (error.message === 'File check timeout') {
