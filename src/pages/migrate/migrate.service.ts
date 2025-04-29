@@ -1,7 +1,7 @@
 import { Debt, DocAttach, LawAct, LawExec, Portfolio } from '@contact/models';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import DO_Types from 'src/modules/database/sqlite/sqlite.models/do_types.model';
+import DO_Types from 'src/modules/database/sqlite/sqlite.models/do-types.model';
 import { MigrateInput } from './migrate.input';
 import { Op } from 'sequelize';
 import { node } from 'src/main';

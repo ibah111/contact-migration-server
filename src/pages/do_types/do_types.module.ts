@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import DO_Types from 'src/modules/database/sqlite/sqlite.models/do_types.model';
+import DO_Types from 'src/modules/database/sqlite/sqlite.models/do-types.model';
 import DO_TypesController from './do_types.controller';
 import DO_TypesService from './do_types.service';
 
