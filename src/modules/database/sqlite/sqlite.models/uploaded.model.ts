@@ -4,6 +4,8 @@ import {
   DataType,
   Model,
   Table,
+  PrimaryKey,
+  AutoIncrement,
 } from 'sequelize-typescript';
 
 @Table({
@@ -11,6 +13,11 @@ import {
   timestamps: true,
 })
 export default class Uploaded extends Model {
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.INTEGER)
+  id: number;
+
   @AllowNull(false)
   @Column(DataType.INTEGER)
   r_docattach_id: number;

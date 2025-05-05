@@ -9,6 +9,12 @@ export const up: MigrationFn<QueryInterface> = ({ context }) =>
       context.createTable(
         tableName,
         {
+          id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            primaryKey: true,
+            autoIncrement: true,
+          },
           r_docattach_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
