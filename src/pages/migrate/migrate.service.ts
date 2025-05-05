@@ -176,7 +176,11 @@ export default class MigrateService {
         const files = doc_attachs;
         let fileCount = 0; // Счетчик файлов для текущего debt_id
 
-        for (const { REL_SERVER_PATH, FILE_SERVER_NAME } of files) {
+        for (const {
+          REL_SERVER_PATH,
+          FILE_SERVER_NAME,
+          doc_attach_id,
+        } of files) {
           try {
             const path = `${REL_SERVER_PATH.replace(/\\/g, '\\\\')}${FILE_SERVER_NAME}`;
             console.log('Processing file:', {
@@ -202,7 +206,7 @@ export default class MigrateService {
 
               if (!exists) {
                 await this.modelUploaded.create({
-                  r_docattach_id: doc_attachs.id,
+                  r_docattach_id: doc_attach_id,
                   file_name: FILE_SERVER_NAME,
                   file_path: path,
                   is_uploaded: false,
@@ -215,11 +219,11 @@ export default class MigrateService {
               }
               // Создаём запись в таблице uploaded
               const uploaded_file = this.modelUploaded.build({
-                r_docattach_id: doc_attachs.id,
+                r_docattach_id: doc_attach_id,
                 file_name: FILE_SERVER_NAME,
                 file_path: path,
                 is_uploaded: false,
-                description: 'Файл найден',
+                description: 'Файл существует и может быть загружен',
               });
               // Если файл существует и нужно загрузить
               if (upload) {
